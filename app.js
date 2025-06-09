@@ -18,30 +18,43 @@ function App() {
         return true;
     });
 
-    return h("div", {},
+    return h("div", { id: "todoapp" },
 
-        h("input", {
-            type: "text",
-            placeholder: "What needs to be done?",
-            onkeydown: e => {
-                if (e.key === "Enter" && e.target.value.trim()) {
-                    state.tasks.push({
-                        id: Date.now(),
-                        name: e.target.value.trim(),
-                        completed: false,
-                    });
-                    e.target.value = "";
+        h("h1", {}, "todos"),
+        h("div", { class: "input-row" },  // wrapper for button + input
+
+            h("button", {
+                class: "toggle-all",
+                onclick: () => {
+                    const allCompleted = state.tasks.length > 0 && state.tasks.every(t => t.completed);
+                    state.tasks.forEach(t => t.completed = !allCompleted);
                     update();
                 }
-            }
-        }),
+            }, "v"),
 
-        h("ul", {},
-            ...visibleTasks.map(task => TaskItem(task))
+            h("input", {
+                type: "text",
+                placeholder: "What needs to be done?",
+                onkeydown: e => {
+                    if (e.key === "Enter" && e.target.value.trim()) {
+                        state.tasks.push({
+                            id: Date.now(),
+                            name: e.target.value.trim(),
+                            completed: false,
+                        });
+                        e.target.value = "";
+                        update();
+                    }
+                }
+            }),
         ),
 
-        Footer()
-    );
+            h("ul", {},
+                ...visibleTasks.map(task => TaskItem(task))
+            ),
+
+            Footer()
+        );
 }
 
 function TaskItem(task) {

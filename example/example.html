@@ -1,0 +1,87 @@
+<html lang="en" data-framework="javascript-es6">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="A TodoMVC written with JavaScript es5 features.">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>TodoMVC: JavaScript Es6 Webpack</title>
+    <script async="" src="https://www.google-analytics.com/analytics.js"></script>
+    <script defer="defer" src="app.bundle.js"></script>
+    <link href="app.css" rel="stylesheet">
+</head>
+
+<body class="learn-bar">
+
+    <aside class="learn">
+        <header>
+            <h3>JavaScript ES6</h3> <span class="source-links">
+                <h5>Example</h5> <a
+                    href="https://github.com/tastejs/todomvc/tree/gh-pages/examples/javascript-es6">Source</a>
+            </span>
+        </header>
+        <hr>
+        <blockquote class="quote speech-bubble">
+            <p>The ECMAScript 6 (ES2015) standard was ratified in 2015 following years of work standardizing
+                improvements to ECMAScript 3. The committee introduced a wide variety of improvements such as arrow
+                functions, const declarations, and native Promises.</p>
+            <footer> <a href="http://developer.mozilla.org/en-US/docs/JavaScript">JavaScript ES6</a> </footer>
+        </blockquote>
+        <footer>
+            <hr> <em>If you have other helpful links to share, or find any of the links above no longer work, please <a
+                    href="https://github.com/tastejs/todomvc/issues">let us know</a>.</em>
+        </footer>
+    </aside>
+    
+    <section class="todoapp">
+        <header class="header">
+            <h1>todos</h1><input class="new-todo" placeholder="What needs to be done?" autofocus="">
+        </header>
+
+        <main class="main" style="display: block;">
+            <div class="toggle-all-container"><input class="toggle-all" type="checkbox"> <label class="toggle-all-label"
+                    for="toggle-all">Mark all as complete</label></div>
+                    
+            <ul class="todo-list">
+                <li data-id="3" class="completed">
+                    <div class="view">
+                        <input class="toggle" type="checkbox">
+                        <label>play</label>
+                        <button class="destroy"></button>
+                    </div>
+                </li>
+
+                <li data-id="2" class="">
+                    <div class="view">
+                        <input class="toggle" type="checkbox">
+                        <label>run</label>
+                        <button class="destroy"></button>
+                    </div>
+                </li>
+
+                <li data-id="1" class="">
+                    <div class="view">
+                        <input class="toggle" type="checkbox">
+                        <label>swim</label>
+                        <button class="destroy"></button>
+                    </div>
+                </li>
+            </ul>
+        </main>
+        <footer class="footer" style="display: block;"><span class="todo-count"><strong>2</strong> items left</span>
+            <ul class="filters">
+                <li><a href="#/" class="selected">All</a></li>
+                <li><a href="#/active">Active</a></li>
+                <li><a href="#/completed">Completed</a></li>
+            </ul><button class="clear-completed" style="display: block;">Clear completed</button>
+        </footer>
+    </section>
+    <footer class="info">
+        <p>Double-click to edit a todo</p>
+        <p>Created by the TodoMVC Team</p>
+        <p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
+    </footer>
+    <script src="./base.js"></script>
+</body>
+
+</html>
