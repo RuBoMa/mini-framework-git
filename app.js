@@ -1,4 +1,4 @@
-import { h, render, mount } from './mini.js';
+import { h, mount } from './mini.js';
 
 let state = {
     tasks: [],
