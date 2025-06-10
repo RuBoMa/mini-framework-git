@@ -1,10 +1,28 @@
 import { h, mount } from './mini.js';
+import { initRouter, navigateTo, isActiveRoute } from './router.js';
 
 let state = {
     tasks: [],
     filter: "all",
     editingId: null,
 };
+
+// Map routes to filter states
+function routeToFilter(route) {
+    if (route === "active" || route === "/active") return "active";
+    if (route === "completed" || route === "/completed") return "completed";
+    return "all";
+}
+
+// Map filter states to routes
+function filterToRoute(filter) {
+    return filter === "all" ? "/" : filter;
+}
+
+function handleRouteChange(route) {
+    state.filter = routeToFilter(route);
+    update();
+}
 
 function update() {
     const root = document.getElementById("app");
@@ -125,9 +143,9 @@ function Footer() {
                 h("button", {
                     onclick: () => {
                         state.filter = f;
-                        update();
+                        navigateTo(filterToRoute(f)); // Use router to navigate
                     },
-                    class: state.filter === f ? "selected" : ""
+                    class: isActiveRoute(filterToRoute(f)) ? "selected" : "" // Use router to check active state
                 }, f)
             )
         ),
@@ -140,4 +158,6 @@ function Footer() {
     );
 }
 
+// Initialize router and start app
+initRouter(handleRouteChange);
 update();
