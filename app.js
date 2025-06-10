@@ -18,7 +18,7 @@ function App() {
         return true;
     });
 
-    return h("div", { id: "todoapp" },
+    return h("main", { id: "todoapp", class: "main" },
 
         h("h1", {}, "todos"),
         h("div", { class: "input-row" },  // wrapper for button + input
@@ -49,12 +49,12 @@ function App() {
             }),
         ),
 
-            h("ul", {},
-                ...visibleTasks.map(task => TaskItem(task))
-            ),
+        h("ul", {},
+            ...visibleTasks.map(task => TaskItem(task))
+        ),
 
-            Footer()
-        );
+        Footer()
+    );
 }
 
 function TaskItem(task) {
@@ -66,6 +66,7 @@ function TaskItem(task) {
             class: `${task.completed ? "completed" : ""} ${isEditing ? "editing" : ""}`
         },
         ...(isEditing
+            // task item being edited
             ? [h("input", {
                 type: "text",
                 value: task.name,
@@ -86,7 +87,9 @@ function TaskItem(task) {
                     }
                 }
             })]
+            // normal task item
             : [
+                
                 h("input", {
                     type: "checkbox",
                     checked: task.completed,
