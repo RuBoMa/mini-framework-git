@@ -25,7 +25,8 @@ function handleRouteChange(route) {
 }
 
 function update() {
-    const root = document.getElementById("app");
+    //const root = document.getElementById("app");
+    const root = document.body;
     mount(root, App());
 }
 
@@ -36,43 +37,54 @@ function App() {
         return true;
     });
 
-    return h("main", { id: "todoapp", class: "main" },
+    return h("section", { class: "todoapp" },
+        h("header", { class: "header" },
+            h("h1", {}, "todos"),
+            h("div", { class: "input-row" },  // wrapper for button + input
 
-        h("h1", {}, "todos"),
-        h("div", { class: "input-row" },  // wrapper for button + input
+                h("div", { class: "toggle-all-container" },
+                    h("input", {
+                        class: "toggle-all",
+                        type: "checkbox",
+                        onclick: () => {
+                            const allCompleted = state.tasks.length > 0 && state.tasks.every(t => t.completed);
+                            state.tasks.forEach(t => t.completed = !allCompleted);
+                            update();
+                        }
+                    }, "v"),
 
-            h("button", {
-                class: "toggle-all",
-                onclick: () => {
-                    const allCompleted = state.tasks.length > 0 && state.tasks.every(t => t.completed);
-                    state.tasks.forEach(t => t.completed = !allCompleted);
-                    update();
-                }
-            }, "v"),
+                    h("label", { class: "toggle-all-label", for: "toggle-all" }, "Mark all as complete")
+                ),
 
-            h("input", {
-                type: "text",
-                placeholder: "What needs to be done?",
-                onkeydown: e => {
-                    if (e.key === "Enter" && e.target.value.trim()) {
-                        state.tasks.push({
-                            id: Date.now(),
-                            name: e.target.value.trim(),
-                            completed: false,
-                        });
-                        e.target.value = "";
-                        update();
+
+                h("input", {
+                    type: "text",
+                    class: "new-todo",
+                    placeholder: "What needs to be done?",
+                    autofocus: "",
+                    onkeydown: e => {
+                        if (e.key === "Enter" && e.target.value.trim()) {
+                            state.tasks.push({
+                                id: Date.now(), // example uses small incrementing values
+                                name: e.target.value.trim(),
+                                completed: false,
+                            });
+                            e.target.value = "";
+                            update();
+                        }
                     }
-                }
-            }),
-        ),
+                }),
+            ),
 
-        h("ul", {},
-            ...visibleTasks.map(task => TaskItem(task))
-        ),
+            h("main", { class: "main" },
+                h("ul", { class: "todo-list" },
+                    ...visibleTasks.map(task => TaskItem(task))
+                ),
+            ),
 
-        Footer()
-    );
+            Footer()
+        )
+    )
 }
 
 function TaskItem(task) {
@@ -81,6 +93,7 @@ function TaskItem(task) {
     return h(
         "li",
         {
+            'data-id':`${task.id}`,
             class: `${task.completed ? "completed" : ""} ${isEditing ? "editing" : ""}`
         },
         ...(isEditing
@@ -107,7 +120,7 @@ function TaskItem(task) {
             })]
             // normal task item
             : [
-                
+
                 h("input", {
                     type: "checkbox",
                     checked: task.completed,
