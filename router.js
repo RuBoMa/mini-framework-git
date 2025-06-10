@@ -1,38 +1,38 @@
-let currentRoute = "";
-let routeChangeCallback = null;
+let currentRoute = ''
+let routeChangeCallback = null
 
 export function initRouter(callback) {
-    routeChangeCallback = callback;
-    
+    routeChangeCallback = callback
+
     // Listen for hash changes (back/forward navigation)
-    window.addEventListener('hashchange', handleRouteChange);
-    
+    window.addEventListener('hashchange', handleRouteChange)
+
     // Initialize route on page load
-    handleRouteChange();
+    handleRouteChange()
 }
 
 export function navigateTo(route) {
-    const hash = route === "" || route === "/" ? "" : route;
-    window.location.hash = hash;
+    const hash = route === '' || route === '/' ? '' : route
+    window.location.hash = hash
     // hashchange event will trigger handleRouteChange
 }
 
 export function getCurrentRoute() {
-    return currentRoute;
+    return currentRoute
 }
 
 function handleRouteChange() {
-    const hash = window.location.hash.slice(1); // Remove '#'
-    currentRoute = hash || "/";
-    
+    const hash = window.location.hash.slice(1) // Remove '#'
+    currentRoute = hash || '/'
+
     if (routeChangeCallback) {
-        routeChangeCallback(currentRoute);
+        routeChangeCallback(currentRoute)
     }
 }
 
 // Helper function to check if current route matches
 export function isActiveRoute(route) {
-    const normalizedRoute = route === "/" ? "" : route;
-    const normalizedCurrent = currentRoute === "/" ? "" : currentRoute;
-    return normalizedCurrent === normalizedRoute;
+    const normalizedRoute = route === '/' ? '' : route
+    const normalizedCurrent = currentRoute === '/' ? '' : currentRoute
+    return normalizedCurrent === normalizedRoute
 }

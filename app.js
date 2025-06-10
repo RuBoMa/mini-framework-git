@@ -1,94 +1,94 @@
-import { h, mount } from './mini.js';
-import { initRouter, navigateTo, isActiveRoute } from './router.js';
+import { h, mount } from './mini.js'
+import { initRouter, isActiveRoute } from './router.js'
 
 let state = {
     tasks: [],
-    filter: "all",
+    filter: 'all',
     editingId: null,
     currentId: 1,
-};
+}
 
 // Map routes to filter states
 function routeToFilter(route) {
-    if (route === "active" || route === "/active") return "active";
-    if (route === "completed" || route === "/completed") return "completed";
-    return "all";
+    if (route === 'active' || route === '/active') return 'active'
+    if (route === 'completed' || route === '/completed') return 'completed'
+    return 'all'
 }
 
 // Map filter states to routes
 function filterToRoute(filter) {
-    return filter === "all" ? "/" : filter;
+    return filter === 'all' ? '/' : filter
 }
 
 function handleRouteChange(route) {
-    state.filter = routeToFilter(route);
-    update();
+    state.filter = routeToFilter(route)
+    update()
 }
 
 function update(focusNewTodo = false) {
-    const root = document.body;
-    mount(root, App());
+    const root = document.body
+    mount(root, App())
     if (focusNewTodo) {
         setTimeout(() => {
-            const input = document.querySelector('.new-todo');
-            if (input) input.focus();
-        });
+            const input = document.querySelector('.new-todo')
+            if (input) input.focus()
+        })
     }
 }
 
 function App() {
     const visibleTasks = state.tasks.filter(task => {
-        if (state.filter === "active") return !task.completed;
-        if (state.filter === "completed") return task.completed;
-        return true;
-    });
+        if (state.filter === 'active') return !task.completed
+        if (state.filter === 'completed') return task.completed
+        return true
+    })
 
-    return h("section", { class: "todoapp" },
-        h("header", { class: "header" },
+    return h('section', { class: 'todoapp' },
+        h('header', { class: 'header' },
 
-            h("h1", {}, "todos"),
+            h('h1', {}, 'todos'),
 
-            h("input", {
-                type: "text",
-                class: "new-todo",
-                placeholder: "What needs to be done?",
-                autofocus: "",
+            h('input', {
+                type: 'text',
+                class: 'new-todo',
+                placeholder: 'What needs to be done?',
+                autofocus: '',
                 onkeydown: e => {
-                    if (e.key === "Enter" && e.target.value.trim()) {
+                    if (e.key === 'Enter' && e.target.value.trim()) {
                         state.tasks.push({
                             id: state.currentId++,
                             name: e.target.value.trim(),
                             completed: false,
-                        });
-                        e.target.value = "";
-                        update(true); // Only focus after adding a new task
+                        })
+                        e.target.value = ''
+                        update(true) // Only focus after adding a new task
                     }
                 }
             }),
         ),
 
-        h("main", { class: "main", style: "display: block" },
+        h('main', { class: 'main', style: 'display: block' },
 
-            h("div", { class: "toggle-all-container" },
-                h("input", {
-                    class: "toggle-all",
-                    type: "checkbox",
+            h('div', { class: 'toggle-all-container' },
+                h('input', {
+                    class: 'toggle-all',
+                    type: 'checkbox',
                 },),
 
-                h("label",
+                h('label',
                     {
-                        class: "toggle-all-label",
-                        for: "toggle-all",
+                        class: 'toggle-all-label',
+                        for: 'toggle-all',
                         onclick: () => {
-                            const allCompleted = state.tasks.length > 0 && state.tasks.every(t => t.completed);
-                            state.tasks.forEach(t => t.completed = !allCompleted);
-                            update();
+                            const allCompleted = state.tasks.length > 0 && state.tasks.every(t => t.completed)
+                            state.tasks.forEach(t => t.completed = !allCompleted)
+                            update()
                         }
                     },
-                    "Mark all as complete")
+                    'Mark all as complete')
             ),
 
-            h("ul", { class: "todo-list" },
+            h('ul', { class: 'todo-list' },
                 ...visibleTasks.map(task => TaskItem(task))
             ),
         ),
@@ -99,99 +99,97 @@ function App() {
 }
 
 function TaskItem(task) {
-    const isEditing = state.editingId === task.id;
+    const isEditing = state.editingId === task.id
 
     return h(
-        "li",
+        'li',
         {
             'data-id': `${task.id}`,
-            class: `${task.completed ? "completed" : ""} ${isEditing ? "editing" : ""}`
+            class: `${task.completed ? 'completed' : ''} ${isEditing ? 'editing' : ''}`
         },
 
-
-
         ...(isEditing
-            // task item being edited
-            ? [h("input", {
-                type: "text",
+        // task item being edited
+            ? [h('input', {
+                type: 'text',
                 value: task.name,
                 autofocus: true,
                 onblur: e => {
-                    task.name = e.target.value.trim();
-                    state.editingId = null;
+                    task.name = e.target.value.trim()
+                    state.editingId = null
                     //update(); // creates double apps
                 },
                 onkeydown: e => {
-                    if (e.key === "Enter") {
-                        task.name = e.target.value.trim();
-                        state.editingId = null;
-                        update();
-                    } else if (e.key === "Escape") {
-                        state.editingId = null;
-                        update();
+                    if (e.key === 'Enter') {
+                        task.name = e.target.value.trim()
+                        state.editingId = null
+                        update()
+                    } else if (e.key === 'Escape') {
+                        state.editingId = null
+                        update()
                     }
                 }
             })]
-            // normal task item
+        // normal task item
             : [
-                h("input", {
-                    type: "checkbox",
-                    class: "toggle",
+                h('input', {
+                    type: 'checkbox',
+                    class: 'toggle',
                     checked: task.completed,
                     onchange: () => {
-                        task.completed = !task.completed;
-                        update();
+                        task.completed = !task.completed
+                        update()
                     }
                 }),
 
-                h("label", {
+                h('label', {
                     ondblclick: () => {
-                        state.editingId = task.id;
-                        update();
+                        state.editingId = task.id
+                        update()
                     }
                 }, task.name),
 
-                h("button", {
-                    class: "destroy",
+                h('button', {
+                    class: 'destroy',
                     onclick: () => {
-                        state.tasks = state.tasks.filter(t => t.id !== task.id);
-                        update();
+                        state.tasks = state.tasks.filter(t => t.id !== task.id)
+                        update()
                     }
                 },)
             ])
 
 
-    );
+    )
 
 }
 
 function Footer() {
-    const activeCount = state.tasks.filter(t => !t.completed).length;
+    const activeCount = state.tasks.filter(t => !t.completed).length
 
-    return h("footer", { class: "footer", style: "display: block;" },
-        h("span", { class: "todo-count" },
-            h("strong", {}, `${activeCount}`),
-            ` item${activeCount !== 1 ? "s" : ""} left`),
-        h("ul", { class: "filters" },
-            ...["all", "active", "completed"].map(f =>
-                h("li", {},
-                    h("a", { href: `/#${f}`, class: isActiveRoute(filterToRoute(f)) ? "selected" : "" }, f)
+    return h('footer', { class: 'footer', style: 'display: block;' },
+        h('span', { class: 'todo-count' },
+            h('strong', {}, `${activeCount}`),
+            ` item${activeCount !== 1 ? 's' : ''} left`),
+        h('ul', { class: 'filters' },
+            ...['all', 'active', 'completed'].map(f =>
+                h('li', {},
+                    h('a', { href: `/#${f}`, class: isActiveRoute(filterToRoute(f)) ? 'selected' : '' }, f)
                 )
             ),
         ),
 
 
-        h("button", {
-            class: "clear-completed",
-            style: state.tasks.some(t => t.completed) ? "display: block;" : "display: none;",
+        h('button', {
+            class: 'clear-completed',
+            style: state.tasks.some(t => t.completed) ? 'display: block;' : 'display: none;',
             onclick: () => {
-                state.tasks = state.tasks.filter(t => !t.completed);
-                update();
+                state.tasks = state.tasks.filter(t => !t.completed)
+                update()
             }
-        }, "Clear Completed")
-    );
+        }, 'Clear Completed')
+    )
 }
 
 // Initialize router and start app
-initRouter(handleRouteChange);
-update();
+initRouter(handleRouteChange)
+update()
