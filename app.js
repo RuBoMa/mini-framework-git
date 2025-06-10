@@ -73,7 +73,7 @@ function App() {
                             state.tasks.forEach(t => t.completed = !allCompleted);
                             update();
                         }
-                    }, "v"),
+                    },),
 
                     h("label", { class: "toggle-all-label", for: "toggle-all" }, "Mark all as complete")
                 ),
@@ -143,7 +143,7 @@ function TaskItem(task) {
                         state.tasks = state.tasks.filter(t => t.id !== task.id);
                         update();
                     }
-                }, "X")
+                },)
             ])
     );
 
@@ -152,20 +152,27 @@ function TaskItem(task) {
 function Footer() {
     const activeCount = state.tasks.filter(t => !t.completed).length;
 
-    return h("footer", {},
-        h("span", {}, `${activeCount} task${activeCount !== 1 ? "s" : ""} left`),
-        h("div", {},
+    return h("footer", { class: "footer", style: "display: block;" },
+        h("span", { class: "todo-count" },
+            h("strong", {}, `${activeCount}`),
+            ` item${activeCount !== 1 ? "s" : ""} left`),
+        h("ul", { class: "filters" },
             ...["all", "active", "completed"].map(f =>
-                h("button", {
-                    onclick: () => {
-                        state.filter = f;
-                        navigateTo(filterToRoute(f)); // Use router to navigate
-                    },
-                    class: isActiveRoute(filterToRoute(f)) ? "selected" : "" // Use router to check active state
-                }, f)
-            )
+                h("li", {
+                    /*  onclick: () => {
+                         state.filter = f;
+                         navigateTo(filterToRoute(f)); // Use router to navigate
+                     }, */
+                    /* class: isActiveRoute(filterToRoute(f)) ? "selected" : "" */
+                },
+                    h("a", { href: `/#${f}`, class: isActiveRoute(filterToRoute(f)) ? "selected" : "" }, f)
+                )
+            ),
         ),
+
         h("button", {
+            class: "clear-completed",
+            style: "display: block",
             onclick: () => {
                 state.tasks = state.tasks.filter(t => !t.completed);
                 update();
