@@ -5,6 +5,7 @@ let state = {
     tasks: [],
     filter: "all",
     editingId: null,
+    currentId: 1,
 };
 
 // Map routes to filter states
@@ -55,7 +56,7 @@ function App() {
                 onkeydown: e => {
                     if (e.key === "Enter" && e.target.value.trim()) {
                         state.tasks.push({
-                            id: Date.now(), // example uses small incrementing values
+                            id: state.currentId++,
                             name: e.target.value.trim(),
                             completed: false,
                         });
@@ -106,6 +107,9 @@ function TaskItem(task) {
             'data-id': `${task.id}`,
             class: `${task.completed ? "completed" : ""} ${isEditing ? "editing" : ""}`
         },
+
+
+
         ...(isEditing
             // task item being edited
             ? [h("input", {
@@ -115,7 +119,7 @@ function TaskItem(task) {
                 onblur: e => {
                     task.name = e.target.value.trim();
                     state.editingId = null;
-                    update();
+                    //update(); // creates double apps
                 },
                 onkeydown: e => {
                     if (e.key === "Enter") {
@@ -130,7 +134,6 @@ function TaskItem(task) {
             })]
             // normal task item
             : [
-
                 h("input", {
                     type: "checkbox",
                     class: "toggle",
@@ -140,12 +143,14 @@ function TaskItem(task) {
                         update();
                     }
                 }),
+
                 h("label", {
                     ondblclick: () => {
                         state.editingId = task.id;
                         update();
                     }
                 }, task.name),
+
                 h("button", {
                     class: "destroy",
                     onclick: () => {
@@ -154,6 +159,8 @@ function TaskItem(task) {
                     }
                 },)
             ])
+
+
     );
 
 }
