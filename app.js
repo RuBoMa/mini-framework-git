@@ -39,9 +39,8 @@ function App() {
 
     return h("section", { class: "todoapp" },
         h("header", { class: "header" },
+
             h("h1", {}, "todos"),
-
-
 
             h("input", {
                 type: "text",
@@ -60,32 +59,37 @@ function App() {
                     }
                 }
             }),
+        ),
 
+        h("main", { class: "main", style: "display: block" },
 
-            h("main", { class: "main" },
+            h("div", { class: "toggle-all-container" },
+                h("input", {
+                    class: "toggle-all",
+                    type: "checkbox",
+                },),
 
-                h("div", { class: "toggle-all-container" },
-                    h("input", {
-                        class: "toggle-all",
-                        type: "checkbox",
+                h("label",
+                    {
+                        class: "toggle-all-label",
+                        for: "toggle-all",
                         onclick: () => {
                             const allCompleted = state.tasks.length > 0 && state.tasks.every(t => t.completed);
                             state.tasks.forEach(t => t.completed = !allCompleted);
                             update();
                         }
-                    },),
-
-                    h("label", { class: "toggle-all-label", for: "toggle-all" }, "Mark all as complete")
-                ),
-
-                h("ul", { class: "todo-list" },
-                    ...visibleTasks.map(task => TaskItem(task))
-                ),
+                    },
+                    "Mark all as complete")
             ),
 
-            Footer()
-        )
+            h("ul", { class: "todo-list" },
+                ...visibleTasks.map(task => TaskItem(task))
+            ),
+        ),
+
+        Footer()
     )
+
 }
 
 function TaskItem(task) {
@@ -158,13 +162,7 @@ function Footer() {
             ` item${activeCount !== 1 ? "s" : ""} left`),
         h("ul", { class: "filters" },
             ...["all", "active", "completed"].map(f =>
-                h("li", {
-                    /*  onclick: () => {
-                         state.filter = f;
-                         navigateTo(filterToRoute(f)); // Use router to navigate
-                     }, */
-                    /* class: isActiveRoute(filterToRoute(f)) ? "selected" : "" */
-                },
+                h("li", {},
                     h("a", { href: `/#${f}`, class: isActiveRoute(filterToRoute(f)) ? "selected" : "" }, f)
                 )
             ),
