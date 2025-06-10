@@ -123,19 +123,21 @@ function TaskItem(task) {
 
                 h("input", {
                     type: "checkbox",
+                    class: "toggle",
                     checked: task.completed,
                     onchange: () => {
                         task.completed = !task.completed;
                         update();
                     }
                 }),
-                h("span", {
+                h("label", {
                     ondblclick: () => {
                         state.editingId = task.id;
                         update();
                     }
                 }, task.name),
                 h("button", {
+                    class: "destroy",
                     onclick: () => {
                         state.tasks = state.tasks.filter(t => t.id !== task.id);
                         update();
