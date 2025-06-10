@@ -25,7 +25,6 @@ function handleRouteChange(route) {
 }
 
 function update() {
-    //const root = document.getElementById("app");
     const root = document.body;
     mount(root, App());
 }
@@ -168,9 +167,10 @@ function Footer() {
             ),
         ),
 
+
         h("button", {
             class: "clear-completed",
-            style: "display: block",
+            style: state.tasks.some(t => t.completed) ? "display: block;" : "display: none;",
             onclick: () => {
                 state.tasks = state.tasks.filter(t => !t.completed);
                 update();
