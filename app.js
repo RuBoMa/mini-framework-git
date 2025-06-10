@@ -40,7 +40,29 @@ function App() {
     return h("section", { class: "todoapp" },
         h("header", { class: "header" },
             h("h1", {}, "todos"),
-            h("div", { class: "input-row" },  // wrapper for button + input
+
+
+
+            h("input", {
+                type: "text",
+                class: "new-todo",
+                placeholder: "What needs to be done?",
+                autofocus: "",
+                onkeydown: e => {
+                    if (e.key === "Enter" && e.target.value.trim()) {
+                        state.tasks.push({
+                            id: Date.now(), // example uses small incrementing values
+                            name: e.target.value.trim(),
+                            completed: false,
+                        });
+                        e.target.value = "";
+                        update();
+                    }
+                }
+            }),
+
+
+            h("main", { class: "main" },
 
                 h("div", { class: "toggle-all-container" },
                     h("input", {
@@ -56,27 +78,6 @@ function App() {
                     h("label", { class: "toggle-all-label", for: "toggle-all" }, "Mark all as complete")
                 ),
 
-
-                h("input", {
-                    type: "text",
-                    class: "new-todo",
-                    placeholder: "What needs to be done?",
-                    autofocus: "",
-                    onkeydown: e => {
-                        if (e.key === "Enter" && e.target.value.trim()) {
-                            state.tasks.push({
-                                id: Date.now(), // example uses small incrementing values
-                                name: e.target.value.trim(),
-                                completed: false,
-                            });
-                            e.target.value = "";
-                            update();
-                        }
-                    }
-                }),
-            ),
-
-            h("main", { class: "main" },
                 h("ul", { class: "todo-list" },
                     ...visibleTasks.map(task => TaskItem(task))
                 ),
@@ -93,7 +94,7 @@ function TaskItem(task) {
     return h(
         "li",
         {
-            'data-id':`${task.id}`,
+            'data-id': `${task.id}`,
             class: `${task.completed ? "completed" : ""} ${isEditing ? "editing" : ""}`
         },
         ...(isEditing
