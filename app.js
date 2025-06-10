@@ -24,9 +24,15 @@ function handleRouteChange(route) {
     update();
 }
 
-function update() {
+function update(focusNewTodo = false) {
     const root = document.body;
     mount(root, App());
+    if (focusNewTodo) {
+        setTimeout(() => {
+            const input = document.querySelector('.new-todo');
+            if (input) input.focus();
+        });
+    }
 }
 
 function App() {
@@ -54,7 +60,7 @@ function App() {
                             completed: false,
                         });
                         e.target.value = "";
-                        update();
+                        update(true); // Only focus after adding a new task
                     }
                 }
             }),
