@@ -113,30 +113,9 @@ function taskItem(task) {
             class: `${task.completed ? 'completed' : ''} ${isEditing ? 'editing' : ''}`
         },
 
-        ...(isEditing
-            // task item being edited
-            ? [createVNode('input', {
-                type: 'text',
-                value: task.name,
-                autofocus: true,
-                onblur: e => {
-                    task.name = e.target.value.trim()
-                    state.editingId = null
-                    //update(); // creates double apps
-                },
-                onkeydown: e => {
-                    if (e.key === 'Enter') {
-                        task.name = e.target.value.trim()
-                        state.editingId = null
-                        update()
-                    } else if (e.key === 'Escape') {
-                        state.editingId = null
-                        update()
-                    }
-                }
-            })]
-            // normal task item
-            : [
+        createVNode('div', {class :'view'},
+
+            ...([
                 createVNode('input', {
                     type: 'checkbox',
                     class: 'toggle',
@@ -162,8 +141,10 @@ function taskItem(task) {
                     }
                 },)
             ])
+        ),
 
-
+        ...(isEditing
+            ? [createVNode('input', {class: 'edit'})] : null )
     )
 
 }
