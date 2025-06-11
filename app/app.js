@@ -197,7 +197,7 @@ function infoFooter() {
         createVNode('ul', { class: 'filters' },
             ...['all', 'active', 'completed'].map(f =>
                 createVNode('li', {},
-                    createVNode('a', { href: `#${f}`, class: isActiveRoute(f) ? 'selected' : '' }, capFirstLetter(f))
+                    createVNode('a', { href: `/#${f}`, class: isActiveRoute(f) ? 'selected' : '' }, capFirstLetter(f))
                 )
             ),
         ),
