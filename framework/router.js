@@ -11,16 +11,6 @@ export function initRouter(callback) {
     handleRouteChange()
 }
 
-export function navigateTo(route) {
-    const hash = route === '' || route === '/' ? '' : route
-    window.location.hash = hash
-    // hashchange event will trigger handleRouteChange
-}
-
-export function getCurrentRoute() {
-    return currentRoute
-}
-
 function handleRouteChange() {
     const hash = window.location.hash.slice(1) // Remove '#'
     currentRoute = hash || '/'
@@ -34,5 +24,5 @@ function handleRouteChange() {
 export function isActiveRoute(route) {
     const normalizedRoute = route === '/' ? '' : route
     const normalizedCurrent = currentRoute === '/' ? '' : currentRoute
-    return normalizedCurrent === normalizedRoute
+    return normalizedCurrent === normalizedRoute || (normalizedCurrent === '' && normalizedRoute === 'all')
 }
