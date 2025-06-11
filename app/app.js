@@ -1,5 +1,5 @@
-import { createVNode, mount } from './mini.js'
-import { initRouter, isActiveRoute } from './router.js'
+import { createVNode, mount } from '../framework/mini.js'
+import { initRouter, isActiveRoute } from '../framework/router.js'
 
 let state = {
     tasks: [],
@@ -109,7 +109,7 @@ function TaskItem(task) {
         },
 
         ...(isEditing
-        // task item being edited
+            // task item being edited
             ? [createVNode('input', {
                 type: 'text',
                 value: task.name,
@@ -130,7 +130,7 @@ function TaskItem(task) {
                     }
                 }
             })]
-        // normal task item
+            // normal task item
             : [
                 createVNode('input', {
                     type: 'checkbox',
