@@ -21,7 +21,7 @@ function filterToRoute(filter) {
 }
 
 function handleRouteChange(route) {
-    state.filter = routeToFilter(route)
+    state.filter = routeToFilter(route) 
     update()
 }
 
