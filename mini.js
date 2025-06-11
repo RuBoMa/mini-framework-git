@@ -30,15 +30,24 @@ export function render(vnode) {
 }
 
 export function mount(root, vnode) {
-
     console.log('Mounting vnode:', vnode)
     if (!(root instanceof Element)) {
         throw new Error('Root must be a DOM Element')
     }
-    if (!vnode || typeof vnode !== 'object' || !vnode.tag) {
-        throw new Error('Invalid vnode structure')
-    }
 
     root.innerHTML = ''
-    root.appendChild(render(vnode))
+
+    if (Array.isArray(vnode)) {
+        vnode.forEach(node => {
+            if (!node || typeof node !== 'object' || !node.tag) {
+                throw new Error('Invalid vnode structure in array')
+            }
+            root.appendChild(render(node))
+        })
+    } else {
+        if (!vnode || typeof vnode !== 'object' || !vnode.tag) {
+            throw new Error('Invalid vnode structure')
+        }
+        root.appendChild(render(vnode))
+    }
 }

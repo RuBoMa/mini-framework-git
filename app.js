@@ -43,7 +43,7 @@ function App() {
         return true
     })
 
-    return h('section', { class: 'todoapp' },
+    return [h('section', { class: 'todoapp' },
         h('header', { class: 'header' },
 
             h('h1', {}, 'todos'),
@@ -93,8 +93,10 @@ function App() {
             ),
         ),
 
-        Footer()
-    )
+        InfoFooter()
+    ),
+    Footer()
+    ]
 
 }
 
@@ -163,7 +165,7 @@ function TaskItem(task) {
 
 }
 
-function Footer() {
+function InfoFooter() {
     const activeCount = state.tasks.filter(t => !t.completed).length
 
     return h('footer', { class: 'footer', style: 'display: block;' },
@@ -187,6 +189,21 @@ function Footer() {
                 update()
             }
         }, 'Clear Completed')
+    )
+}
+
+function Footer() {
+    return h('footer', { class: 'info' },
+        h('p', {}, 'Double-click to edit a todo'),
+        h('p', {}, 
+            h('span', {}, 'Created by '),
+            h('a', {href: 'https://github.com/MarkusYPA'}, 'MarkusYPA, '),
+            h('a', {href: 'https://github.com/RuBoMa'}, 'RuBoMa, '),
+            h('a', {href: 'https://github.com/Toft08'}, 'Toft08, '),
+            h('a', {href: 'https://github.com/prahimi94'}, 'prahimi94, '),
+            h('a', {href: 'https://github.com/mareerray'}, 'mareerray '),
+        ),
+        h('a', {href: 'https://github.com/RuBoMa/mini-framework-git'}, 'TodoMVC')
     )
 }
 
