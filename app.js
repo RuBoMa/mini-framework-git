@@ -49,57 +49,7 @@ function app() {
     return [
         sidebar(),
 
-        createVNode('section', { class: 'todoapp' },
-            createVNode('header', { class: 'header' },
-
-                createVNode('h1', {}, 'todos'),
-
-                createVNode('input', {
-                    type: 'text',
-                    class: 'new-todo',
-                    placeholder: 'What needs to be done?',
-                    autofocus: '',
-                    onkeydown: e => {
-                        if (e.key === 'Enter' && e.target.value.trim()) {
-                            state.tasks.push({
-                                id: state.currentId++,
-                                name: e.target.value.trim(),
-                                completed: false,
-                            })
-                            e.target.value = ''
-                            update('newTodo') // Only focus after adding a new task
-                        }
-                    }
-                }),
-            ),
-
-            createVNode('main', { class: 'main', style: 'display: block' },
-
-                createVNode('div', { class: 'toggle-all-container' },
-                    createVNode('input', {
-                        class: 'toggle-all',
-                        type: 'checkbox',
-                    }),
-
-                    createVNode('label',
-                        {
-                            class: 'toggle-all-label',
-                            for: 'toggle-all',
-                            onclick: () => {
-                                const allCompleted = state.tasks.length > 0 && state.tasks.every(t => t.completed)
-                                state.tasks.forEach(t => t.completed = !allCompleted)
-                                update()
-                            }
-                        },
-                        'Mark all as complete')
-                ),
-
-                createVNode('ul', { class: 'todo-list' },
-                    ...visibleTasks.map(task => taskItem(task))
-                ),
-            ),
-            infoFooter()
-        ),
+        mainSection(visibleTasks),
 
         footer()
     ]
@@ -184,9 +134,68 @@ function sidebar() {
     )
 }
 
+function mainSection(visibleTasks) {
+    return createVNode('section', { class: 'todoapp' },
+        createVNode('header', { class: 'header' },
+
+            createVNode('h1', {}, 'todos'),
+
+            createVNode('input', {
+                type: 'text',
+                class: 'new-todo',
+                placeholder: 'What needs to be done?',
+                autofocus: '',
+                onkeydown: e => {
+                    if (e.key === 'Enter' && e.target.value.trim()) {
+                        state.tasks.push({
+                            id: state.currentId++,
+                            name: e.target.value.trim(),
+                            completed: false,
+                        })
+                        e.target.value = ''
+                        update('newTodo') // Only focus after adding a new task
+                    }
+                }
+            }),
+        ),
+
+        createVNode('main', { class: 'main', style: 'display: block' },
+
+            createVNode('div', { class: 'toggle-all-container' },
+                createVNode('input', {
+                    class: 'toggle-all',
+                    type: 'checkbox',
+                }),
+
+                createVNode('label',
+                    {
+                        class: 'toggle-all-label',
+                        for: 'toggle-all',
+                        onclick: () => {
+                            const allCompleted = state.tasks.length > 0 && state.tasks.every(t => t.completed)
+                            state.tasks.forEach(t => t.completed = !allCompleted)
+                            update()
+                        }
+                    },
+                    'Mark all as complete')
+            ),
+
+            createVNode('ul', { class: 'todo-list' },
+                ...visibleTasks.map(task => taskItem(task))
+            ),
+        ),
+        infoFooter()
+    )
+}
+
 function infoFooter() {
     const activeCount = state.tasks.filter(t => !t.completed).length
 
+    // Show "No tasks available" only the first time (when app loads or completed tasks are cleared)
+    if (activeCount === 0 && state.tasks.length === 0 && state.currentId === 1) {
+        return ''
+    }
+    
     return createVNode('footer', { class: 'footer', style: 'display: block;' },
         createVNode('span', { class: 'todo-count' },
             createVNode('strong', {}, `${activeCount}`),
@@ -204,6 +213,7 @@ function infoFooter() {
             style: state.tasks.some(t => t.completed) ? 'display: block;' : 'display: none;',
             onclick: () => {
                 state.tasks = state.tasks.filter(t => !t.completed)
+                state.currentId = state.tasks.length > 0 ? Math.max(...state.tasks.map(t => t.id)) + 1 : 1
                 update()
             }
         }, 'Clear Completed')
