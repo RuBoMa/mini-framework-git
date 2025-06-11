@@ -24,5 +24,5 @@ function handleRouteChange() {
 export function isActiveRoute(route) {
     const normalizedRoute = route === '/' ? '' : route
     const normalizedCurrent = currentRoute === '/' ? '' : currentRoute
-    return normalizedCurrent === normalizedRoute
+    return normalizedCurrent === normalizedRoute || (normalizedCurrent === '' && normalizedRoute === 'all')
 }

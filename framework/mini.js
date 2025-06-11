@@ -4,7 +4,6 @@ export function createVNode(tag, attrs = {}, ...children) {
     return { tag, attrs, children }
 }
 
-
 export function render(vnode) {
     if (typeof vnode === 'string' || typeof vnode === 'number') {
         return document.createTextNode(vnode)
