@@ -1,6 +1,6 @@
 // the helper h takes a tag, and object of attributes and child objects or content
 // (string or number) and creates a JavaScript object ready to be rendered into html
-export function h(tag, attrs = {}, ...children) {
+export function createVNode(tag, attrs = {}, ...children) {
     return { tag, attrs, children }
 }
 

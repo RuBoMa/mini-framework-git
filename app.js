@@ -1,4 +1,4 @@
-import { h, mount } from './mini.js'
+import { createVNode, mount } from './mini.js'
 import { initRouter, isActiveRoute } from './router.js'
 
 let state = {
@@ -43,12 +43,12 @@ function App() {
         return true
     })
 
-    return h('section', { class: 'todoapp' },
-        h('header', { class: 'header' },
+    return createVNode('section', { class: 'todoapp' },
+        createVNode('header', { class: 'header' },
 
-            h('h1', {}, 'todos'),
+            createVNode('h1', {}, 'todos'),
 
-            h('input', {
+            createVNode('input', {
                 type: 'text',
                 class: 'new-todo',
                 placeholder: 'What needs to be done?',
@@ -67,15 +67,15 @@ function App() {
             }),
         ),
 
-        h('main', { class: 'main', style: 'display: block' },
+        createVNode('main', { class: 'main', style: 'display: block' },
 
-            h('div', { class: 'toggle-all-container' },
-                h('input', {
+            createVNode('div', { class: 'toggle-all-container' },
+                createVNode('input', {
                     class: 'toggle-all',
                     type: 'checkbox',
-                },),
+                }),
 
-                h('label',
+                createVNode('label',
                     {
                         class: 'toggle-all-label',
                         for: 'toggle-all',
@@ -88,7 +88,7 @@ function App() {
                     'Mark all as complete')
             ),
 
-            h('ul', { class: 'todo-list' },
+            createVNode('ul', { class: 'todo-list' },
                 ...visibleTasks.map(task => TaskItem(task))
             ),
         ),
@@ -101,7 +101,7 @@ function App() {
 function TaskItem(task) {
     const isEditing = state.editingId === task.id
 
-    return h(
+    return createVNode(
         'li',
         {
             'data-id': `${task.id}`,
@@ -110,7 +110,7 @@ function TaskItem(task) {
 
         ...(isEditing
         // task item being edited
-            ? [h('input', {
+            ? [createVNode('input', {
                 type: 'text',
                 value: task.name,
                 autofocus: true,
@@ -132,7 +132,7 @@ function TaskItem(task) {
             })]
         // normal task item
             : [
-                h('input', {
+                createVNode('input', {
                     type: 'checkbox',
                     class: 'toggle',
                     checked: task.completed,
@@ -142,14 +142,14 @@ function TaskItem(task) {
                     }
                 }),
 
-                h('label', {
+                createVNode('label', {
                     ondblclick: () => {
                         state.editingId = task.id
                         update()
                     }
                 }, task.name),
 
-                h('button', {
+                createVNode('button', {
                     class: 'destroy',
                     onclick: () => {
                         state.tasks = state.tasks.filter(t => t.id !== task.id)
@@ -166,20 +166,20 @@ function TaskItem(task) {
 function Footer() {
     const activeCount = state.tasks.filter(t => !t.completed).length
 
-    return h('footer', { class: 'footer', style: 'display: block;' },
-        h('span', { class: 'todo-count' },
-            h('strong', {}, `${activeCount}`),
+    return createVNode('footer', { class: 'footer', style: 'display: block;' },
+        createVNode('span', { class: 'todo-count' },
+            createVNode('strong', {}, `${activeCount}`),
             ` item${activeCount !== 1 ? 's' : ''} left`),
-        h('ul', { class: 'filters' },
+        createVNode('ul', { class: 'filters' },
             ...['all', 'active', 'completed'].map(f =>
-                h('li', {},
-                    h('a', { href: `/#${f}`, class: isActiveRoute(filterToRoute(f)) ? 'selected' : '' }, f)
+                createVNode('li', {},
+                    createVNode('a', { href: `/#${f}`, class: isActiveRoute(filterToRoute(f)) ? 'selected' : '' }, f)
                 )
             ),
         ),
 
 
-        h('button', {
+        createVNode('button', {
             class: 'clear-completed',
             style: state.tasks.some(t => t.completed) ? 'display: block;' : 'display: none;',
             onclick: () => {
