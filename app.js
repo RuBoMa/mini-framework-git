@@ -27,7 +27,7 @@ function handleRouteChange(route) {
 
 function update(focusNewTodo = false) {
     const root = document.body
-    mount(root, App())
+    mount(root, app())
     if (focusNewTodo) {
         setTimeout(() => {
             const input = document.querySelector('.new-todo')
@@ -36,7 +36,7 @@ function update(focusNewTodo = false) {
     }
 }
 
-function App() {
+function app() {
     const visibleTasks = state.tasks.filter(task => {
         if (state.filter === 'active') return !task.completed
         if (state.filter === 'completed') return task.completed
@@ -92,18 +92,18 @@ function App() {
                 ),
 
                 createVNode('ul', { class: 'todo-list' },
-                    ...visibleTasks.map(task => TaskItem(task))
+                    ...visibleTasks.map(task => taskItem(task))
                 ),
             ),
-            InfoFooter()
+            infoFooter()
         ),
 
-        Footer()
+        footer()
     ]
 
 }
 
-function TaskItem(task) {
+function taskItem(task) {
     const isEditing = state.editingId === task.id
 
     return createVNode(
@@ -188,7 +188,7 @@ function sidebar() {
 
 }
 
-function InfoFooter() {
+function infoFooter() {
     const activeCount = state.tasks.filter(t => !t.completed).length
 
     return createVNode('footer', { class: 'footer', style: 'display: block;' },
@@ -215,7 +215,7 @@ function InfoFooter() {
     )
 }
 
-function Footer() {
+function footer() {
     return createVNode('footer', { class: 'info' },
         createVNode('p', {}, 'Double-click to edit a todo'),
         createVNode('p', {},

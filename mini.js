@@ -1,4 +1,4 @@
-// the helper h takes a tag, and object of attributes and child objects or content
+// createVNode takes a tag, and object of attributes and child objects or content
 // (string or number) and creates a JavaScript object ready to be rendered into html
 export function createVNode(tag, attrs = {}, ...children) {
     return { tag, attrs, children }
@@ -14,7 +14,7 @@ export function render(vnode) {
 
     for (const [key, value] of Object.entries(vnode.attrs || {})) {
         if (key.startsWith('on') && typeof value === 'function') {
-            el.addEventListener(key.slice(2).toLowerCase(), value)     // is this allowed?
+            el.addEventListener(key.slice(2).toLowerCase(), value)
         } else if (key in el) {
             el[key] = value // handles checked, value, disabled, etc.
         } else {
@@ -30,7 +30,6 @@ export function render(vnode) {
 }
 
 export function mount(root, vnode) {
-    console.log('Mounting vnode:', vnode)
     if (!(root instanceof Element)) {
         throw new Error('Root must be a DOM Element')
     }
