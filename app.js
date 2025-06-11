@@ -25,12 +25,20 @@ function handleRouteChange(route) {
     update()
 }
 
-function update(focusNewTodo = false) {
+function update(focus = 'newTodo') {
     const root = document.body
     mount(root, app())
-    if (focusNewTodo) {
+
+    if (focus == 'newTodo') {
         setTimeout(() => {
             const input = document.querySelector('.new-todo')
+            if (input) input.focus()
+        })
+    }
+
+    if (focus == 'editTask') {
+        setTimeout(() => {
+            const input = document.querySelector('.edit')
             if (input) input.focus()
         })
     }
@@ -64,7 +72,7 @@ function app() {
                                 completed: false,
                             })
                             e.target.value = ''
-                            update(true) // Only focus after adding a new task
+                            update('newTodo') // Only focus after adding a new task
                         }
                     }
                 }),
@@ -113,7 +121,7 @@ function taskItem(task) {
             class: `${task.completed ? 'completed' : ''}${isEditing ? 'editing' : ''}`
         },
         createVNode('div', {class: 'view'},
-            
+
             createVNode('input', {
                 type: 'checkbox',
                 class: 'toggle',
@@ -127,7 +135,7 @@ function taskItem(task) {
             createVNode('label', {
                 ondblclick: () => {
                     state.editingId = task.id
-                    update()
+                    update('editTask')
                 }
             }, task.name),
 
@@ -141,9 +149,26 @@ function taskItem(task) {
         ),
 
         // add editing input if task is being edited
-        isEditing && createVNode('input', {class: 'edit'})
+        isEditing && createVNode('input', {
+            class: 'edit',
+            value: task.name,
+            autofocus: true,
+            onblur: e => {
+                task.name = e.target.value.trim()
+                state.editingId = null
+            },
+            onkeydown: e => {
+                if (e.key === 'Enter') {
+                    task.name = e.target.value.trim()
+                    state.editingId = null
+                    update()
+                } else if (e.key === 'Escape') {
+                    state.editingId = null
+                    update()
+                }
+            }
+        })
     )
-
 }
 
 function sidebar() {
@@ -163,7 +188,6 @@ function sidebar() {
             ),
         ),
     )
-
 }
 
 function infoFooter() {
@@ -180,7 +204,6 @@ function infoFooter() {
                 )
             ),
         ),
-
 
         createVNode('button', {
             class: 'clear-completed',
