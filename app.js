@@ -43,58 +43,63 @@ function App() {
         return true
     })
 
-    return createVNode('section', { class: 'todoapp' },
-        createVNode('header', { class: 'header' },
+    return [
+        sidebar(),
 
-            createVNode('h1', {}, 'todos'),
+        createVNode('section', { class: 'todoapp' },
+            createVNode('header', { class: 'header' },
 
-            createVNode('input', {
-                type: 'text',
-                class: 'new-todo',
-                placeholder: 'What needs to be done?',
-                autofocus: '',
-                onkeydown: e => {
-                    if (e.key === 'Enter' && e.target.value.trim()) {
-                        state.tasks.push({
-                            id: state.currentId++,
-                            name: e.target.value.trim(),
-                            completed: false,
-                        })
-                        e.target.value = ''
-                        update(true) // Only focus after adding a new task
-                    }
-                }
-            }),
-        ),
+                createVNode('h1', {}, 'todos'),
 
-        createVNode('main', { class: 'main', style: 'display: block' },
-
-            createVNode('div', { class: 'toggle-all-container' },
                 createVNode('input', {
-                    class: 'toggle-all',
-                    type: 'checkbox',
-                }),
-
-                createVNode('label',
-                    {
-                        class: 'toggle-all-label',
-                        for: 'toggle-all',
-                        onclick: () => {
-                            const allCompleted = state.tasks.length > 0 && state.tasks.every(t => t.completed)
-                            state.tasks.forEach(t => t.completed = !allCompleted)
-                            update()
+                    type: 'text',
+                    class: 'new-todo',
+                    placeholder: 'What needs to be done?',
+                    autofocus: '',
+                    onkeydown: e => {
+                        if (e.key === 'Enter' && e.target.value.trim()) {
+                            state.tasks.push({
+                                id: state.currentId++,
+                                name: e.target.value.trim(),
+                                completed: false,
+                            })
+                            e.target.value = ''
+                            update(true) // Only focus after adding a new task
                         }
-                    },
-                    'Mark all as complete')
+                    }
+                }),
             ),
 
-            createVNode('ul', { class: 'todo-list' },
-                ...visibleTasks.map(task => TaskItem(task))
+            createVNode('main', { class: 'main', style: 'display: block' },
+
+                createVNode('div', { class: 'toggle-all-container' },
+                    createVNode('input', {
+                        class: 'toggle-all',
+                        type: 'checkbox',
+                    }),
+
+                    createVNode('label',
+                        {
+                            class: 'toggle-all-label',
+                            for: 'toggle-all',
+                            onclick: () => {
+                                const allCompleted = state.tasks.length > 0 && state.tasks.every(t => t.completed)
+                                state.tasks.forEach(t => t.completed = !allCompleted)
+                                update()
+                            }
+                        },
+                        'Mark all as complete')
+                ),
+
+                createVNode('ul', { class: 'todo-list' },
+                    ...visibleTasks.map(task => TaskItem(task))
+                ),
             ),
+            InfoFooter()
         ),
 
         Footer()
-    )
+    ]
 
 }
 
@@ -109,7 +114,7 @@ function TaskItem(task) {
         },
 
         ...(isEditing
-        // task item being edited
+            // task item being edited
             ? [createVNode('input', {
                 type: 'text',
                 value: task.name,
@@ -130,7 +135,7 @@ function TaskItem(task) {
                     }
                 }
             })]
-        // normal task item
+            // normal task item
             : [
                 createVNode('input', {
                     type: 'checkbox',
@@ -163,7 +168,27 @@ function TaskItem(task) {
 
 }
 
-function Footer() {
+function sidebar() {
+    return createVNode('aside', { class: 'learn' },
+        createVNode('header', {},
+            createVNode('h3', {}, 'Mini-framework'),
+            createVNode('span', { class: 'source-links' })
+        ),
+        createVNode('hr'),
+        createVNode('blockquote', { class: 'quote speech-bubble' },
+            createVNode('p', {}, 'MiniJS is a minimal JavaScript UI framework that allows you to declaratively create and update DOM trees using a virtual element structure. Inspired by modern component-based libraries, it provides simple tools to:'),
+            createVNode('ul', {},
+                createVNode('li', {}, 'Create HTML elements'),
+                createVNode('li', {}, 'Add attributes and event handlers'),
+                createVNode('li', {}, 'Nest elements'),
+                createVNode('li', {}, 'Dynamically render based on application state')
+            ),
+        ),
+    )
+
+}
+
+function InfoFooter() {
     const activeCount = state.tasks.filter(t => !t.completed).length
 
     return createVNode('footer', { class: 'footer', style: 'display: block;' },
@@ -187,6 +212,21 @@ function Footer() {
                 update()
             }
         }, 'Clear Completed')
+    )
+}
+
+function Footer() {
+    return createVNode('footer', { class: 'info' },
+        createVNode('p', {}, 'Double-click to edit a todo'),
+        createVNode('p', {},
+            createVNode('span', {}, 'Created by '),
+            createVNode('a', { href: 'https://github.com/MarkusYPA' }, 'MarkusYPA, '),
+            createVNode('a', { href: 'https://github.com/RuBoMa' }, 'RuBoMa, '),
+            createVNode('a', { href: 'https://github.com/Toft08' }, 'Toft08, '),
+            createVNode('a', { href: 'https://github.com/prahimi94' }, 'prahimi94, '),
+            createVNode('a', { href: 'https://github.com/mareerray' }, 'mareerray '),
+        ),
+        createVNode('a', { href: 'https://github.com/RuBoMa/mini-framework-git' }, 'TodoMVC')
     )
 }
 
