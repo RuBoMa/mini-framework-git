@@ -1,5 +1,5 @@
-import { createVNode, mount } from './mini.js'
-import { initRouter, isActiveRoute } from './router.js'
+import { createVNode, mount } from '../framework/mini.js'
+import { initRouter, isActiveRoute } from '../framework/router.js'
 
 let state = {
     tasks: [],
