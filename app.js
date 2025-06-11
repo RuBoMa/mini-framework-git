@@ -110,41 +110,38 @@ function taskItem(task) {
         'li',
         {
             'data-id': `${task.id}`,
-            class: `${task.completed ? 'completed' : ''} ${isEditing ? 'editing' : ''}`
+            class: `${task.completed ? 'completed' : ''}${isEditing ? 'editing' : ''}`
         },
+        createVNode('div', {class: 'view'},
+            
+            createVNode('input', {
+                type: 'checkbox',
+                class: 'toggle',
+                checked: task.completed,
+                onchange: () => {
+                    task.completed = !task.completed
+                    update()
+                }
+            }),
 
-        createVNode('div', {class :'view'},
+            createVNode('label', {
+                ondblclick: () => {
+                    state.editingId = task.id
+                    update()
+                }
+            }, task.name),
 
-            ...([
-                createVNode('input', {
-                    type: 'checkbox',
-                    class: 'toggle',
-                    checked: task.completed,
-                    onchange: () => {
-                        task.completed = !task.completed
-                        update()
-                    }
-                }),
-
-                createVNode('label', {
-                    ondblclick: () => {
-                        state.editingId = task.id
-                        update()
-                    }
-                }, task.name),
-
-                createVNode('button', {
-                    class: 'destroy',
-                    onclick: () => {
-                        state.tasks = state.tasks.filter(t => t.id !== task.id)
-                        update()
-                    }
-                },)
-            ])
+            createVNode('button', {
+                class: 'destroy',
+                onclick: () => {
+                    state.tasks = state.tasks.filter(t => t.id !== task.id)
+                    update()
+                }
+            }),
         ),
 
-        ...(isEditing
-            ? [createVNode('input', {class: 'edit'})] : null )
+        // add editing input if task is being edited
+        isEditing && createVNode('input', {class: 'edit'})
     )
 
 }
