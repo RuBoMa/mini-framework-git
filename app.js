@@ -15,17 +15,12 @@ function routeToFilter(route) {
     return 'all'
 }
 
-// Map filter states to routes
-function filterToRoute(filter) {
-    return filter === 'all' ? '/' : filter
-}
-
 function handleRouteChange(route) {
     state.filter = routeToFilter(route)
     update()
 }
 
-function update(focus = 'newTodo') {
+function update(focus = '') {
     const root = document.body
     mount(root, app())
 
@@ -108,7 +103,6 @@ function app() {
 
         footer()
     ]
-
 }
 
 function taskItem(task) {
@@ -200,7 +194,7 @@ function infoFooter() {
         createVNode('ul', { class: 'filters' },
             ...['all', 'active', 'completed'].map(f =>
                 createVNode('li', {},
-                    createVNode('a', { href: `/#${f}`, class: isActiveRoute(filterToRoute(f)) ? 'selected' : '' }, f)
+                    createVNode('a', { href: `/#${f}`, class: isActiveRoute(f) ? 'selected' : '' }, capFirstLetter(f))
                 )
             ),
         ),
@@ -229,6 +223,13 @@ function footer() {
         ),
         createVNode('a', { href: 'https://github.com/RuBoMa/mini-framework-git' }, 'TodoMVC')
     )
+}
+
+function capFirstLetter(str) {
+    if (typeof str !== 'string' || str.length === 0) {
+        return '' // Handle non-string or empty input
+    }
+    return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
 // Initialize router and start app
