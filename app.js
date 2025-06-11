@@ -47,7 +47,7 @@ function App() {
         return true
     })
 
-    return createVNode('section', { class: 'todoapp' },
+    return [createVNode('section', { class: 'todoapp' },
         createVNode('header', { class: 'header' },
 
             createVNode('h1', {}, 'todos'),
@@ -97,8 +97,10 @@ function App() {
             ),
         ),
 
-        Footer()
-    )
+        InfoFooter()
+    ),
+    Footer()
+    ]
 
 }
 
@@ -197,7 +199,7 @@ function sidebar() {
     )
 }
 
-function Footer() {
+function InfoFooter() {
     const activeCount = state.tasks.filter(t => !t.completed).length
 
     return createVNode('footer', { class: 'footer', style: 'display: block;' },
@@ -221,6 +223,21 @@ function Footer() {
                 update()
             }
         }, 'Clear Completed')
+    )
+}
+
+function Footer() {
+    return createVNode('footer', { class: 'info' },
+        createVNode('p', {}, 'Double-click to edit a todo'),
+        createVNode('p', {}, 
+            createVNode('span', {}, 'Created by '),
+            createVNode('a', {href: 'https://github.com/MarkusYPA'}, 'MarkusYPA, '),
+            createVNode('a', {href: 'https://github.com/RuBoMa'}, 'RuBoMa, '),
+            createVNode('a', {href: 'https://github.com/Toft08'}, 'Toft08, '),
+            createVNode('a', {href: 'https://github.com/prahimi94'}, 'prahimi94, '),
+            createVNode('a', {href: 'https://github.com/mareerray'}, 'mareerray '),
+        ),
+        createVNode('a', {href: 'https://github.com/RuBoMa/mini-framework-git'}, 'TodoMVC')
     )
 }
 
