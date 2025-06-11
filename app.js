@@ -1,12 +1,6 @@
 import { createVNode, mount } from './framework/mini.js'
 import { initRouter, isActiveRoute } from './framework/router.js'
-
-let state = {
-    tasks: [],
-    filter: 'all',
-    editingId: null,
-    currentId: 1,
-}
+import { state } from './framework/state.js'
 
 // Map routes to filter states
 function routeToFilter(route) {
