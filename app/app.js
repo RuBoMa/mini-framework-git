@@ -1,11 +1,11 @@
-import { createVNode, mount } from './framework/mini.js'
-import { initRouter, isActiveRoute } from './framework/router.js'
-import { state } from './framework/state.js'
+import { createVNode, mount } from '../framework/mini.js'
+import { initRouter, isActiveRoute } from '../framework/router.js'
+import { state } from '../framework/state.js'
 
 // Map routes to filter states
 function routeToFilter(route) {
-    if (route === 'active' || route === '/active') return 'active'
-    if (route === 'completed' || route === '/completed') return 'completed'
+    if (route === 'active' || route === './active') return 'active'
+    if (route === 'completed' || route === './completed') return 'completed'
     return 'all'
 }
 
@@ -197,7 +197,7 @@ function infoFooter() {
         createVNode('ul', { class: 'filters' },
             ...['all', 'active', 'completed'].map(f =>
                 createVNode('li', {},
-                    createVNode('a', { href: `/#${f}`, class: isActiveRoute(f) ? 'selected' : '' }, capFirstLetter(f))
+                    createVNode('a', { href: `#${f}`, class: isActiveRoute(f) ? 'selected' : '' }, capFirstLetter(f))
                 )
             ),
         ),
