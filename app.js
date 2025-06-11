@@ -118,7 +118,7 @@ function taskItem(task) {
         'li',
         {
             'data-id': `${task.id}`,
-            class: `${task.completed ? 'completed' : ''}${isEditing ? 'editing' : ''}`
+            class: `${task.completed ? 'completed' : ''} ${isEditing ? 'editing' : ''}`
         },
         createVNode('div', {class: 'view'},
 
