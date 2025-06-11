@@ -136,60 +136,6 @@ function sidebar() {
 
 function mainSection(visibleTasks) {
     return createVNode('section', { class: 'todoapp' },
-            createVNode('header', { class: 'header' },
-
-                createVNode('h1', {}, 'todos'),
-
-                createVNode('input', {
-                    type: 'text',
-                    class: 'new-todo',
-                    placeholder: 'What needs to be done?',
-                    autofocus: '',
-                    onkeydown: e => {
-                        if (e.key === 'Enter' && e.target.value.trim()) {
-                            state.tasks.push({
-                                id: state.currentId++,
-                                name: e.target.value.trim(),
-                                completed: false,
-                            })
-                            e.target.value = ''
-                            update('newTodo') // Only focus after adding a new task
-                        }
-                    }
-                }),
-            ),
-
-            createVNode('main', { class: 'main', style: 'display: block' },
-
-                createVNode('div', { class: 'toggle-all-container' },
-                    createVNode('input', {
-                        class: 'toggle-all',
-                        type: 'checkbox',
-                    }),
-
-                    createVNode('label',
-                        {
-                            class: 'toggle-all-label',
-                            for: 'toggle-all',
-                            onclick: () => {
-                                const allCompleted = state.tasks.length > 0 && state.tasks.every(t => t.completed)
-                                state.tasks.forEach(t => t.completed = !allCompleted)
-                                update()
-                            }
-                        },
-                        'Mark all as complete')
-                ),
-
-                createVNode('ul', { class: 'todo-list' },
-                    ...visibleTasks.map(task => taskItem(task))
-                ),
-            ),
-            infoFooter()
-        )
-}
-
-function mainSection(visibleTasks) {
-    return createVNode('section', { class: 'todoapp' },
         createVNode('header', { class: 'header' },
 
             createVNode('h1', {}, 'todos'),
@@ -207,7 +153,7 @@ function mainSection(visibleTasks) {
                             completed: false,
                         })
                         e.target.value = ''
-                        update(true) // Only focus after adding a new task
+                        update('newTodo') // Only focus after adding a new task
                     }
                 }
             }),
@@ -238,7 +184,6 @@ function mainSection(visibleTasks) {
                 ...visibleTasks.map(task => taskItem(task))
             ),
         ),
-        
         infoFooter()
     )
 }
