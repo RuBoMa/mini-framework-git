@@ -13,7 +13,7 @@ export function render(vnode) {
 
     for (const [key, value] of Object.entries(vnode.attrs || {})) {
         if (key.startsWith('on') && typeof value === 'function') {
-            el.addEventListener(key.slice(2).toLowerCase(), value)
+            el[key.toLowerCase()] = value // handles event listeners
         } else if (key in el) {
             el[key] = value // handles checked, value, disabled, etc.
         } else {

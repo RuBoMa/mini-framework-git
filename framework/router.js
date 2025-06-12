@@ -5,7 +5,8 @@ export function initRouter(callback) {
     routeChangeCallback = callback
 
     // Listen for hash changes (back/forward navigation)
-    window.addEventListener('hashchange', handleRouteChange)
+    // window.addEventListener('hashchange', handleRouteChange)
+    window.onhashchange = handleRouteChange
 
     // Initialize route on page load
     handleRouteChange()
