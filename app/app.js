@@ -1,6 +1,6 @@
 import { createVNode, mount } from '../framework/mini.js'
 import { initRouter, isActiveRoute } from '../framework/router.js'
-import { state } from '../framework/state.js'
+import { state, subscribe } from '../framework/state.js'
 
 // Map routes to filter states
 function routeToFilter(route) {
@@ -11,27 +11,24 @@ function routeToFilter(route) {
 
 function handleRouteChange(route) {
     state.filter = routeToFilter(route)
-    update()
 }
 
-function update(focus = '') {
+function update() {
     const root = document.body
     mount(root, app())
 
-    if (focus == 'newTodo') {
-        setTimeout(() => {
+    // focus if adding tasks or editing
+    setTimeout(() => {
+        if (state.editingId === 0) {
             const input = document.querySelector('.new-todo')
             if (input) input.focus()
-        })
-    }
-
-    if (focus == 'editTask') {
-        setTimeout(() => {
+        } else if (state.editingId) {
             const input = document.querySelector('.edit')
             if (input) input.focus()
-        })
-    }
+        }
+    })
 }
+
 
 function app() {
     const visibleTasks = state.tasks.filter(task => {
@@ -42,71 +39,9 @@ function app() {
 
     return [
         sidebar(),
-
         mainSection(visibleTasks),
-
         footer()
     ]
-}
-
-function taskItem(task) {
-    const isEditing = state.editingId === task.id
-
-    return createVNode(
-        'li',
-        {
-            'data-id': `${task.id}`,
-            class: `${task.completed ? 'completed' : ''} ${isEditing ? 'editing' : ''}`
-        },
-        createVNode('div', {class: 'view'},
-
-            createVNode('input', {
-                type: 'checkbox',
-                class: 'toggle',
-                checked: task.completed,
-                onchange: () => {
-                    task.completed = !task.completed
-                    update()
-                }
-            }),
-
-            createVNode('label', {
-                ondblclick: () => {
-                    state.editingId = task.id
-                    update('editTask')
-                }
-            }, task.name),
-
-            createVNode('button', {
-                class: 'destroy',
-                onclick: () => {
-                    state.tasks = state.tasks.filter(t => t.id !== task.id)
-                    update()
-                }
-            }),
-        ),
-
-        // add editing input if task is being edited
-        isEditing && createVNode('input', {
-            class: 'edit',
-            value: task.name,
-            autofocus: true,
-            onblur: e => {
-                task.name = e.target.value.trim()
-                state.editingId = null
-            },
-            onkeydown: e => {
-                if (e.key === 'Enter') {
-                    task.name = e.target.value.trim()
-                    state.editingId = null
-                    update()
-                } else if (e.key === 'Escape') {
-                    state.editingId = null
-                    update()
-                }
-            }
-        })
-    )
 }
 
 function sidebar() {
@@ -147,7 +82,7 @@ function mainSection(visibleTasks) {
                             completed: false,
                         })
                         e.target.value = ''
-                        update('newTodo') // Only focus after adding a new task
+                        state.editingId = 0
                     }
                 }
             }),
@@ -168,7 +103,6 @@ function mainSection(visibleTasks) {
                         onclick: () => {
                             const allCompleted = state.tasks.length > 0 && state.tasks.every(t => t.completed)
                             state.tasks.forEach(t => t.completed = !allCompleted)
-                            update()
                         }
                     },
                     'Mark all as complete')
@@ -179,6 +113,61 @@ function mainSection(visibleTasks) {
             ),
         ),
         infoFooter()
+    )
+}
+
+function taskItem(task) {
+    const isEditing = state.editingId === task.id
+
+    return createVNode(
+        'li',
+        {
+            'data-id': `${task.id}`,
+            class: `${task.completed ? 'completed' : ''} ${isEditing ? 'editing' : ''}`
+        },
+        createVNode('div', {class: 'view'},
+
+            createVNode('input', {
+                type: 'checkbox',
+                class: 'toggle',
+                checked: task.completed,
+                onchange: () => {
+                    task.completed = !task.completed
+                }
+            }),
+
+            createVNode('label', {
+                ondblclick: () => {
+                    state.editingId = task.id
+                }
+            }, task.name),
+
+            createVNode('button', {
+                class: 'destroy',
+                onclick: () => {
+                    state.tasks = state.tasks.filter(t => t.id !== task.id)
+                }
+            }),
+        ),
+
+        // add editing input if task is being edited
+        isEditing && createVNode('input', {
+            class: 'edit',
+            value: task.name,
+            autofocus: true,
+            onblur: e => {
+                task.name = e.target.value.trim()
+                state.editingId = null
+            },
+            onkeydown: e => {
+                if (e.key === 'Enter') {
+                    task.name = e.target.value.trim()
+                    state.editingId = null
+                } else if (e.key === 'Escape') {
+                    state.editingId = null
+                }
+            }
+        })
     )
 }
 
@@ -208,7 +197,6 @@ function infoFooter() {
             onclick: () => {
                 state.tasks = state.tasks.filter(t => !t.completed)
                 state.currentId = state.tasks.length > 0 ? Math.max(...state.tasks.map(t => t.id)) + 1 : 1
-                update()
             }
         }, 'Clear Completed')
     )
@@ -238,4 +226,5 @@ function capFirstLetter(str) {
 
 // Initialize router and start app
 initRouter(handleRouteChange)
+subscribe(() => update())       // subscribe update() to state changes
 update()
