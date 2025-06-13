@@ -1,6 +1,6 @@
 import { createVNode, mount } from '../framework/mini.js'
 import { initRouter, isActiveRoute } from '../framework/router.js'
-import { state } from '../framework/state.js'
+import { state, subscribe } from '../framework/state.js'
 
 // Map routes to filter states
 function routeToFilter(route) {
@@ -11,27 +11,24 @@ function routeToFilter(route) {
 
 function handleRouteChange(route) {
     state.filter = routeToFilter(route)
-    update()
 }
 
-function update(focus = '') {
+function update() {
     const root = document.body
     mount(root, app())
 
-    if (focus == 'newTodo') {
-        setTimeout(() => {
-            const input = document.querySelector('.new-todo')
-            if (input) input.focus()
-        })
-    }
-
-    if (focus == 'editTask') {
-        setTimeout(() => {
+    // restore focus if editing or adding tasks
+    setTimeout(() => {
+        if (state.editingId !== null) {
             const input = document.querySelector('.edit')
             if (input) input.focus()
-        })
-    }
+        } else {
+            const input = document.querySelector('.new-todo')
+            if (input) input.focus()
+        }
+    })
 }
+
 
 function app() {
     const visibleTasks = state.tasks.filter(task => {
@@ -42,9 +39,7 @@ function app() {
 
     return [
         sidebar(),
-
         mainSection(visibleTasks),
-
         footer()
     ]
 }
@@ -66,14 +61,12 @@ function taskItem(task) {
                 checked: task.completed,
                 onchange: () => {
                     task.completed = !task.completed
-                    update()
                 }
             }),
 
             createVNode('label', {
                 ondblclick: () => {
                     state.editingId = task.id
-                    update('editTask')
                 }
             }, task.name),
 
@@ -81,7 +74,6 @@ function taskItem(task) {
                 class: 'destroy',
                 onclick: () => {
                     state.tasks = state.tasks.filter(t => t.id !== task.id)
-                    update()
                 }
             }),
         ),
@@ -99,10 +91,8 @@ function taskItem(task) {
                 if (e.key === 'Enter') {
                     task.name = e.target.value.trim()
                     state.editingId = null
-                    update()
                 } else if (e.key === 'Escape') {
                     state.editingId = null
-                    update()
                 }
             }
         })
@@ -147,7 +137,6 @@ function mainSection(visibleTasks) {
                             completed: false,
                         })
                         e.target.value = ''
-                        update('newTodo') // Only focus after adding a new task
                     }
                 }
             }),
@@ -168,7 +157,6 @@ function mainSection(visibleTasks) {
                         onclick: () => {
                             const allCompleted = state.tasks.length > 0 && state.tasks.every(t => t.completed)
                             state.tasks.forEach(t => t.completed = !allCompleted)
-                            update()
                         }
                     },
                     'Mark all as complete')
@@ -208,7 +196,6 @@ function infoFooter() {
             onclick: () => {
                 state.tasks = state.tasks.filter(t => !t.completed)
                 state.currentId = state.tasks.length > 0 ? Math.max(...state.tasks.map(t => t.id)) + 1 : 1
-                update()
             }
         }, 'Clear Completed')
     )
@@ -238,4 +225,5 @@ function capFirstLetter(str) {
 
 // Initialize router and start app
 initRouter(handleRouteChange)
+subscribe(() => update())       // subscribe update() to state changes
 update()
