@@ -17,13 +17,13 @@ function update() {
     const root = document.body
     mount(root, app())
 
-    // restore focus if editing or adding tasks
+    // focus if adding tasks or editing
     setTimeout(() => {
-        if (state.editingId !== null) {
-            const input = document.querySelector('.edit')
-            if (input) input.focus()
-        } else {
+        if (state.editingId === 0) {
             const input = document.querySelector('.new-todo')
+            if (input) input.focus()
+        } else if (state.editingId) {
+            const input = document.querySelector('.edit')
             if (input) input.focus()
         }
     })
@@ -42,6 +42,78 @@ function app() {
         mainSection(visibleTasks),
         footer()
     ]
+}
+
+function sidebar() {
+    return createVNode('aside', { class: 'learn' },
+        createVNode('header', {},
+            createVNode('h3', {}, 'Mini-framework'),
+            createVNode('span', { class: 'source-links' })
+        ),
+        createVNode('hr'),
+        createVNode('blockquote', { class: 'quote speech-bubble' },
+            createVNode('p', {}, 'MiniJS is a minimal JavaScript UI framework that allows you to declaratively create and update DOM trees using a virtual element structure. Inspired by modern component-based libraries, it provides simple tools to:'),
+            createVNode('ul', {},
+                createVNode('li', {}, 'Create HTML elements'),
+                createVNode('li', {}, 'Add attributes and event handlers'),
+                createVNode('li', {}, 'Nest elements'),
+                createVNode('li', {}, 'Dynamically render based on application state')
+            ),
+        ),
+    )
+}
+
+function mainSection(visibleTasks) {
+    return createVNode('section', { class: 'todoapp' },
+        createVNode('header', { class: 'header' },
+
+            createVNode('h1', {}, 'todos'),
+
+            createVNode('input', {
+                type: 'text',
+                class: 'new-todo',
+                placeholder: 'What needs to be done?',
+                autofocus: '',
+                onkeydown: e => {
+                    if (e.key === 'Enter' && e.target.value.trim()) {
+                        state.tasks.push({
+                            id: state.currentId++,
+                            name: e.target.value.trim(),
+                            completed: false,
+                        })
+                        e.target.value = ''
+                        state.editingId = 0
+                    }
+                }
+            }),
+        ),
+
+        createVNode('main', { class: 'main', style: 'display: block' },
+
+            createVNode('div', { class: 'toggle-all-container' },
+                createVNode('input', {
+                    class: 'toggle-all',
+                    type: 'checkbox',
+                }),
+
+                createVNode('label',
+                    {
+                        class: 'toggle-all-label',
+                        for: 'toggle-all',
+                        onclick: () => {
+                            const allCompleted = state.tasks.length > 0 && state.tasks.every(t => t.completed)
+                            state.tasks.forEach(t => t.completed = !allCompleted)
+                        }
+                    },
+                    'Mark all as complete')
+            ),
+
+            createVNode('ul', { class: 'todo-list' },
+                ...visibleTasks.map(task => taskItem(task))
+            ),
+        ),
+        infoFooter()
+    )
 }
 
 function taskItem(task) {
@@ -96,77 +168,6 @@ function taskItem(task) {
                 }
             }
         })
-    )
-}
-
-function sidebar() {
-    return createVNode('aside', { class: 'learn' },
-        createVNode('header', {},
-            createVNode('h3', {}, 'Mini-framework'),
-            createVNode('span', { class: 'source-links' })
-        ),
-        createVNode('hr'),
-        createVNode('blockquote', { class: 'quote speech-bubble' },
-            createVNode('p', {}, 'MiniJS is a minimal JavaScript UI framework that allows you to declaratively create and update DOM trees using a virtual element structure. Inspired by modern component-based libraries, it provides simple tools to:'),
-            createVNode('ul', {},
-                createVNode('li', {}, 'Create HTML elements'),
-                createVNode('li', {}, 'Add attributes and event handlers'),
-                createVNode('li', {}, 'Nest elements'),
-                createVNode('li', {}, 'Dynamically render based on application state')
-            ),
-        ),
-    )
-}
-
-function mainSection(visibleTasks) {
-    return createVNode('section', { class: 'todoapp' },
-        createVNode('header', { class: 'header' },
-
-            createVNode('h1', {}, 'todos'),
-
-            createVNode('input', {
-                type: 'text',
-                class: 'new-todo',
-                placeholder: 'What needs to be done?',
-                autofocus: '',
-                onkeydown: e => {
-                    if (e.key === 'Enter' && e.target.value.trim()) {
-                        state.tasks.push({
-                            id: state.currentId++,
-                            name: e.target.value.trim(),
-                            completed: false,
-                        })
-                        e.target.value = ''
-                    }
-                }
-            }),
-        ),
-
-        createVNode('main', { class: 'main', style: 'display: block' },
-
-            createVNode('div', { class: 'toggle-all-container' },
-                createVNode('input', {
-                    class: 'toggle-all',
-                    type: 'checkbox',
-                }),
-
-                createVNode('label',
-                    {
-                        class: 'toggle-all-label',
-                        for: 'toggle-all',
-                        onclick: () => {
-                            const allCompleted = state.tasks.length > 0 && state.tasks.every(t => t.completed)
-                            state.tasks.forEach(t => t.completed = !allCompleted)
-                        }
-                    },
-                    'Mark all as complete')
-            ),
-
-            createVNode('ul', { class: 'todo-list' },
-                ...visibleTasks.map(task => taskItem(task))
-            ),
-        ),
-        infoFooter()
     )
 }
 
