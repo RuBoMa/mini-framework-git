@@ -42,9 +42,7 @@ function app() {
 
     return [
         sidebar(),
-
         mainSection(visibleTasks),
-
         footer()
     ]
 }
@@ -124,6 +122,12 @@ function sidebar() {
                 createVNode('li', {}, 'Nest elements'),
                 createVNode('li', {}, 'Dynamically render based on application state')
             ),
+            createVNode('footer', {},
+                createVNode('a', { 
+                    href: 'https://github.com/01-edu/public/tree/master/subjects/mini-framework',
+                    target: '_blank',
+                }, 'View on GitHub')
+            )
         ),
     )
 }
@@ -186,7 +190,8 @@ function infoFooter() {
     const activeCount = state.tasks.filter(t => !t.completed).length
 
     // Show "No tasks available" only the first time (when app loads or completed tasks are cleared)
-    if (activeCount === 0 && state.tasks.length === 0 && state.currentId === 1) {
+    //if (activeCount === 0 && state.tasks.length === 0 && state.currentId === 1) {
+    if (state.tasks.length === 0) {  // this should suffice. infoFooter didn't disappear when removing tasks individually
         return ''
     }
     
