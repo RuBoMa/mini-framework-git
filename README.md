@@ -2,15 +2,15 @@
 
 Mini Framework is a lightweight JavaScript framework for building interactive web applications with [virtual DOM rendering](#virtual-dom-rendering) and [client-side routing](#client-side-routing).
 
-This documentation will help you understand how the framework works and how to use it to build web applications quickly and efficiently.
+This documentation provides comprehensive guidance on framework implementation and application development.
 
 
 ## Table of Contents
-1. [Prerequisites](#prerequisites)
-2. [Quick Start](#quick-start)
-3. [Core Concepts](#core-concepts) 
+1. [Core Concepts](#core-concepts) 
     - [Virtual Nodes (VNodes)](#virtual-nodes-vnodes)
     - [Rendering Process](#rendering-process)
+2. [Prerequisites](#prerequisites)
+3. [Framework Testing](#framework-testing)
 4. [Getting Started](#getting-started)
 5. [Creating Elements](#creating-elements)
     - [Basic Elements](#basic-elements)
@@ -21,7 +21,6 @@ This documentation will help you understand how the framework works and how to u
     - [Click Events](#click-events)
     - [Input Events](#input-events)
     - [Keyboard Events](#keyboard-events)
-    - [Form Events](#form-events)
 7. [Routing](#routing)
     - [Navigation Links](#navigation-links)
     - [Programmatic Navigation](#programatic-navigation)
@@ -30,61 +29,20 @@ This documentation will help you understand how the framework works and how to u
     - [Component Pattern](#component-pattern)
 9. [Complete Examples](#complete-examples)
     - [Todo List Component](#todo-list-component)
-    - [Simple Form](#simple-form)
 10. [API Reference](#api-reference)
     - [mini.js](#minijs)
     - [router.js](#routerjs)
-## Prerequisites
+11. [Best Practices](#best-practices)
+12. [Footnotes](#footnotes)
+13. [Contributors](#contributors)
 
-To run Mini Framework, you need:
-
-- **A modern web browser**  
-  (such as Chrome, Firefox, Edge, or Safari)
-
-- **Project files in the same folder:**  
-  - `mini.js` – the core framework file
-  - `router.js` – for client-side routing
-  - `app.js` – your application code
-  - `index.html` – loads your app and scripts
-
-- **No installation or build tools required**  
-  Simply open `index.html` in your browser to run your app.
-
-**Example folder structure:**
-````
-/your-project-folder
-├── index.html
-├── mini.js
-├── router.js
-└── app.js
-````
-
-## Quick Start
-
-Here’s how to get your first Mini Framework app running in just a few lines:
-```javascript
-import { createVNode, mount } from './mini.js'
-import { initRouter, isActiveRoute } from './router.js'
-
-// Initialize your app
-function App() {
-    return createVNode('div', { class: 'app' }, 'Hello World!')
-}
-
-// Mount to DOM
-mount(document.body, App())
-```
-This will display a simple “Hello World!” message on your page.  
-You can now start adding elements, events, and more!
 ## Core Concepts
 
 ### Virtual Nodes (VNodes)
 
-The framework uses virtual nodes to represent DOM elements before rendering. 
-
-A VNode is a JavaScript object with three main parts:
+The framework utilizes virtual nodes to represent DOM elements before rendering. A VNode is a JavaScript object containing three main components:
 - `tag` - HTML tag name (e.g., 'div', 'button')
-- `attrs` - Object containing attributes (like class, id) and event handlers (like click, onclick)
+- `attrs` - Object containing attributes (such as class, id) and event handlers (such as click, onclick)
 - `children` - Array of child nodes (strings, numbers, or other VNodes)
 
 ### Rendering Process
@@ -97,47 +55,166 @@ Example:
 `````
 const myVNode = createVNode('button', { class: 'primary', onclick: handleClick }, 'Click Me')
 `````
-This line creates a virtual button element with a class, a click event, and the label “Click Me.” When rendered, it will look and behave like this in HTML, and when clicked, it will call the `handleClick` function.
+This creates a virtual button element with a class, a click event, and the label “Click Me.” When rendered, it produces the following HTML structure and executes the handleClick function when clicked:
 
 ````
 <button class="primary">Click Me</button>
 ````
 
+## Prerequisites
+
+Mini Framework requires the following components:
+
+- **Modern web browser**  
+  (such as Chrome, Firefox, Edge, or Safari)
+
+- **Project files:**  
+  - `mini.js` – core framework file
+  - `router.js` – client-side routing functionality
+  - `state.js`- application state management
+  - `app.js` – application code
+  - `app.css` - application styles
+  - `index.html` – application loader and script references
+
+- **No installation or build tools required**  
+  Open `index.html` in a browser to run the application.
+
+  The browser environment must supports ES module imports. Include the following in index.html:
+  ````
+  `<script type="module" src="./app/app.js"></script>`
+  ````
+
+**Recommended folder structure:**
+````
+/project-folder
+├──framework
+|   ├── mini.js
+|   ├── router.js
+|   └── state.js
+├── app
+|   ├── app.js
+|   └── app.css
+└── index.html
+````
+
+## Framework Testing
+
+The following test demonstrates core framework features:
+
+**Features tested:**
+- ✅ Virtual DOM creation with `createVNode`
+- ✅ Component mounting with `mount`
+- ✅ Client-side routing with hash navigation
+- ✅ State management with reactive updates
+- ✅ Event handling
+
+Copy the code below into a test file and open it in a browser to verify framework functionality. Ensure file paths match the folder structure.
+
+
+```javascript
+import { createVNode, mount } from '../framework/mini.js'
+import { initRouter } from '../framework/router.js'
+import { state } from '../framework/state.js'
+
+function App() {
+    const currentRoute = window.location.hash.slice(1) || '/home'
+    
+    return createVNode('div', { class: 'app' },
+        createVNode('h1', {}, 'Mini Framework Test'),
+        
+        // Navigation
+        createVNode('nav', {},
+            createVNode('a', { 
+                href: '#/home',
+                onclick: (e) => { 
+                    e.preventDefault(); 
+                    window.location.hash = '#/home' 
+                }
+            }, 'Home'),
+            ' | ',
+            createVNode('a', { 
+                href: '#/about',
+                onclick: (e) => { 
+                    e.preventDefault(); 
+                    window.location.hash = '#/about' 
+                }
+            }, 'About')
+        ),
+        
+        // Route content
+        createVNode('div', { style: 'margin-top: 1em;' }, [
+            currentRoute === '/home' 
+                ? createVNode('p', {}, 'Welcome to the home page!')
+                : createVNode('p', {}, 'This is the about page.')
+        ]),
+        
+        // State management demo
+        createVNode('p', {}, `Count: ${state.count}`),
+        createVNode('button', {
+            onclick: () => {
+                state.count += 1
+                mount(document.body, App())
+            }
+        }, 'Increment')
+    )
+}
+
+// Initialize router
+initRouter(() => {
+    mount(document.body, App())
+})
+
+// Initialize and mount
+state.count = 0
+mount(document.body, App())
+
+```
+**Test functionality:**
+- Creates an application with Home/About navigation
+- Displays different content based on current route
+- Includes a counter demonstrating state updates
+- Re-renders the entire application when state or route changes
+
 ## Getting Started
 
 ### Basic Setup
 
-To get start with your App using the Mini Framework, follow these steps:
+To initialize an application using the Mini Framework, follow these steps:
 
-### 1. Import the core functions from your framework files:
+### 1. Import the core functions from framework files:
+These import statements should be placed at the top of the main application file (typically app.js in the app folder):
+
+Note: Import paths must be adjusted to correspond with the project's folder structure as specified in the Prerequisites section
 
 ```javascript
 import { createVNode, mount } from './mini.js'
 import { initRouter, isActiveRoute } from './router.js'
+import { state } from '../framework/state.js'
 ````
-- `createVnode` is used to create virtual DOM nodes (VNodes).
-- `mount` renders your app to the actual web page.
-- `initRouter` and `isActiveRoute` are for routing.
+- `createVnode` creates virtual DOM nodes (VNodes)
+- `mount` renders the application to the web page
+- `initRouter` initializes client-side routing
+- `isActiveRoute` checks if a route is currently active
+- `state` manages global application state
 
-### 2. Define your app component
+### 2. Define the application component
 
-Create a function called `App` that returns the structure of your application using VNodes:
+Create a function called `App` that returns the application structure using VNodes:
 
 ````
 function App() {
     return createVNode('div', { class: 'app' }, 'Hello World!')
 }
 `````
-- This example creates a `<div>` with the class `app` and the text "Hello World" inside.
-- You can expand this function to return more complex layouts as your app grows.
+- This example creates a `<div>` with the class `app` and the text "Hello World" inside. This function can be expanded to return more complex layouts as the application grows.
 
-### 3. Mount your App to the page
+### 3. Mount the application to the page
 
-Render your app by mounting it to the DOM:
+Render the application by mounting it to the DOM:
 ````
 mount(document.body, App())
 ````
-This tells the framework to take the VNode returned by `App()` and display it inside the `<body>` of your HTML page. 
+This instructs the framework to take the VNode returned by `App()` and display it inside the `<body>` of the HTML page. 
 
 ## Creating Elements
 ### Basic Elements
@@ -146,7 +223,7 @@ Use `createVNode(tag, attributes, ...children)` to create elements:
 
 ```javascript
 // Simple div
-createVNode('div', {}, 'Hello World')
+createVNode('h3', {}, 'Mini-framework')
 
 // Div with class
 createVNode('div', { class: 'container' }, 'Content')
@@ -272,22 +349,6 @@ createVNode('input', {
 })
 ```
 
-### Form Events
-
-```javascript
-createVNode('form', {
-    class: 'contact-form',
-    onsubmit: (e) => {
-        e.preventDefault()
-        const formData = new FormData(e.target)
-        handleSubmit(formData)
-    }
-},
-    createVNode('input', { name: 'email', type: 'email' }),
-    createVNode('button', { type: 'submit' }, 'Submit')
-)
-```
-
 ## Routing
 
 The framework includes a simple hash-based router for single-page applications.
@@ -295,7 +356,7 @@ The framework includes a simple hash-based router for single-page applications.
 ### Router Setup
 
 ```javascript
-import { initRouter, isActiveRoute, navigateTo } from './router.js'
+import { initRouter, isActiveRoute } from './router.js'
 
 // Define route handler
 function handleRouteChange(route) {
@@ -457,55 +518,6 @@ function TodoItem(todo) {
     )
 }
 ```
-
-### Simple Form
-
-```javascript
-function ContactForm() {
-    return createVNode('form', { 
-        class: 'contact-form',
-        onsubmit: handleSubmit 
-    },
-        createVNode('div', { class: 'field' },
-            createVNode('label', {}, 'Name:'),
-            createVNode('input', { 
-                type: 'text', 
-                name: 'name', 
-                required: true 
-            })
-        ),
-        
-        createVNode('div', { class: 'field' },
-            createVNode('label', {}, 'Email:'),
-            createVNode('input', { 
-                type: 'email', 
-                name: 'email', 
-                required: true 
-            })
-        ),
-        
-        createVNode('div', { class: 'field' },
-            createVNode('label', {}, 'Message:'),
-            createVNode('textarea', { 
-                name: 'message', 
-                rows: 4,
-                required: true 
-            })
-        ),
-        
-        createVNode('button', { type: 'submit' }, 'Send Message')
-    )
-}
-
-function handleSubmit(e) {
-    e.preventDefault()
-    const formData = new FormData(e.target)
-    const data = Object.fromEntries(formData)
-    console.log('Form submitted:', data)
-    // Handle form submission
-}
-```
-
 ## API Reference
 
 ### mini.js
@@ -595,9 +607,9 @@ Client side routing lets your app change the URL and display new content instant
 ## Contributors
 | Name           | GitHub Profile                        | 
 |----------------|---------------------------------------|
-| Markus Amberla    | [MarkusYPA](https://github.com/MarkusYPA) | 
-| Mayuree Reunsati       | [mareerray](https://github.com/mareerray)         | 
-| Parisa Rahimi   | [prahimi94](https://github.com/prahimi94) | 
-| Roope Hongisto       | [RuBoMa](https://github.com/RuBoMa)         | 
-| Toft Diederichs | [Toft08](https://github.com/Toft08) | 
+| Markus Amberla        | [MarkusYPA](https://github.com/MarkusYPA) | 
+| Mayuree Reunsati      | [mareerray](https://github.com/mareerray)         | 
+| Parisa Rahimi         | [prahimi94](https://github.com/prahimi94) | 
+| Roope Hongisto        | [RuBoMa](https://github.com/RuBoMa)         | 
+| Toft Diederichs       | [Toft08](https://github.com/Toft08) | 
 
