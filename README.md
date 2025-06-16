@@ -6,9 +6,11 @@ This documentation provides comprehensive guidance on framework implementation a
 
 
 ## Table of Contents
-1. [Core Concepts](#core-concepts) 
-    - [Virtual Nodes (VNodes)](#virtual-nodes-vnodes)
-    - [Rendering Process](#rendering-process)
+1. [Framework Features](#framework-features) 
+    - [Core Capabilities](#core-capabilities)
+    - [Use cases](#use-cases)
+    - [Architecture](#architecture)
+    - [Key Benefits](#key-benefits)
 2. [Prerequisites](#prerequisites)
 3. [Framework Testing](#framework-testing)
 4. [Getting Started](#getting-started)
@@ -32,34 +34,37 @@ This documentation provides comprehensive guidance on framework implementation a
 10. [API Reference](#api-reference)
     - [mini.js](#minijs)
     - [router.js](#routerjs)
+    - [state.js](#statejs)
 11. [Best Practices](#best-practices)
-12. [Footnotes](#footnotes)
+12. [Footnote](#footnote)
 13. [Contributors](#contributors)
 
-## Core Concepts
+## Framework Features
 
-### Virtual Nodes (VNodes)
+### Core Capabilities
+- **Virtual DOM Rendering** - Efficient DOM manipulation through [virtual nodes](#virtual-nodes)
+- **Client-Side Routing** - Hash-based navigation for single-page applications  
+- **Event Handling** - Comprehensive event management with `on` prefix syntax
+- **Component Architecture** - Reusable functions returning VNodes
+- **Lightweight Design** - No external dependencies or build tools required
 
-The framework utilizes virtual nodes to represent DOM elements before rendering. A VNode is a JavaScript object containing three main components:
-- `tag` - HTML tag name (e.g., 'div', 'button')
-- `attrs` - Object containing attributes (such as class, id) and event handlers (such as click, onclick)
-- `children` - Array of child nodes (strings, numbers, or other VNodes)
+### Use Cases
+- Interactive web applications and dashboards
+- Single-page applications (SPAs)
+- Rapid prototyping and educational projects
+- Small to medium-scale applications
 
-### Rendering Process
+### Architecture
+Three-layer structure:
+1. **Virtual DOM Layer** [(`mini.js`)](#minijs) - VNode creation and management
+2. **Routing Layer** [(`router.js`)](#routerjs) - Client-side navigation
+3. **State Layer** [(`state.js`)](#statejs) - Application data management
 
-1. Create VNodes using `createVNode()` function
-2. Mount the root VNode using `mount()` function
-3. The framework converts VNodes to real DOM elements
-
-Example:
-`````
-const myVNode = createVNode('button', { class: 'primary', onclick: handleClick }, 'Click Me')
-`````
-This creates a virtual button element with a class, a click event, and the label “Click Me.” When rendered, it produces the following HTML structure and executes the handleClick function when clicked:
-
-````
-<button class="primary">Click Me</button>
-````
+### Key Benefits
+- Simple API with minimal learning curve
+- Browser-compatible ES modules (Chrome, Firefox, Edge, Safari)
+- Transparent implementation for educational value
+- Flexible architecture without enforced patterns
 
 ## Prerequisites
 
@@ -72,7 +77,7 @@ Mini Framework requires the following components:
   - `mini.js` – core framework file
   - `router.js` – client-side routing functionality
   - `state.js`- application state management
-  - `app.js` – application code
+  - `app.js` – main application
   - `app.css` - application styles
   - `index.html` – application loader and script references
 
@@ -108,7 +113,7 @@ The following test demonstrates core framework features:
 - ✅ State management with reactive updates
 - ✅ Event handling
 
-Copy the code below into a test file and open it in a browser to verify framework functionality. Ensure file paths match the folder structure.
+Copy the code below into app.js for testing purpose and open it in a browser to verify framework functionality. Ensure file paths match the folder structure.
 
 
 ```javascript
@@ -523,41 +528,77 @@ function TodoItem(todo) {
 ### mini.js
 
 #### `createVNode(tag, attrs, ...children)`
-Creates a virtual node object.
-- **tag** (string): HTML tag name
-- **attrs** (object): Attributes and event handlers
-- **children** (array): Child nodes (strings, numbers, or VNodes)
-- **Returns**: VNode object
+Creates a virtual node object that represents a DOM element before rendering.
+- **tag** (string): HTML tag name (e.g., 'div', 'button', 'input')
+- **attrs** (object): Attributes and event handlers object
+    - Standard HTML attributes (class, id, style, etc.)
+    - Event handlers with 'on' prefix (onclick, onkeydown, onchange, etc.)
+    - Boolean attributes (checked, disabled, autofocus, etc.)
+- **children** (array): Child nodes which can be strings, numbers, or other VNodes
+- **Returns**: VNode object with structure { tag, attrs, children }
 
 #### `render(vnode)`
-Converts a virtual node to a real DOM element.
+Converts a virtual node into a real DOM element with full attribute and event handling.
 - **vnode** (VNode|string|number): Virtual node to render
+    - VNode objects are converted to DOM elements
+    - Strings and numbers become text nodes
+    - Event handlers are automatically bound using addEventListener
 - **Returns**: DOM Element or Text Node
+- **Event Handling**: Automatically converts 'on' prefixed attributes to event listeners
 
 #### `mount(root, vnode)`
-Mounts a virtual node to a DOM element.
-- **root** (Element): Target DOM element
-- **vnode** (VNode): Virtual node to mount
+Mounts rendered virtual nodes to a target DOM element, replacing existing content.
+- **root** (Element):  Target DOM element where content will be mounted
+- **vnode** (VNode|Array): Virtual node or array of virtual nodes to mount
+- **Behavior**:
+    - Clears existing content with innerHTML = ''
+    - Handles both single vnodes and arrays of vnodes
+    - Validates vnode structure before rendering
 - **Throws**: Error if root is not a DOM Element or vnode is invalid
 
 ### router.js
 
 #### `initRouter(callback)`
-Initializes the router with a route change handler.
-- **callback** (function): Called when route changes with new route as parameter
-
-#### `navigateTo(route)`
-Programmatically navigate to a route.
-- **route** (string): Target route path
-
-#### `getCurrentRoute()`
-Gets the current route.
-- **Returns**: Current route string
+Initializes the hash-based router system for single-page application navigation.
+- **callback** (function): Function called when route changes
+    - Receives the new route as a parameter
+    - Triggered on initial page load and hash changes
+- **Functionality**:
+    - Sets up hashchange event listener for browser navigation
+    - Handles initial route on page load
+    - Enables back/forward button support
 
 #### `isActiveRoute(route)`
-Checks if a route is currently active.
-- **route** (string): Route to check
-- **Returns**: Boolean indicating if route is active
+Determines if a specified route matches the current active route.
+- **route** (string): Route to check against current route
+- **Returns**: Boolean indicating if route is currently active
+- **Special Handling**:
+    - Normalizes routes (treats '/' and '' as equivalent)
+    - Handles 'all' filter matching empty routes
+    - Used for highlighting active navigation links
+#### `handleRouteChange()` (Internal)
+Internal function that processes route changes and updates the current route state.
+- **Functionality**:
+    - Extracts route from window.location.hash
+    - Updates internal currentRoute variable
+    - Calls registered callback function with new route
+
+### state.js
+
+state (Object)
+Global application state object that manages todo application data and UI state.
+
+State Structure:
+
+````
+const state = {
+    tasks: [],           // Array of task objects
+    filter: 'all',       // Current filter ('all', 'active', 'completed')
+    editingId: null,     // ID of task currently being edited
+    currentId: 1         // Counter for generating unique task IDs
+}
+````
+
 
 ## Best Practices
 
@@ -567,49 +608,45 @@ Checks if a route is currently active.
 4. **Key Attributes**: Use unique identifiers for list items when possible
 5. **Performance**: Consider batching updates for better performance
 
-## Common Patterns
-
-### Conditional Rendering
-```javascript
-createVNode('div', {},
-    user ? 
-        createVNode('span', {}, `Welcome, ${user.name}!`) :
-        createVNode('button', { onclick: showLogin }, 'Login')
-)
-```
-
-### Dynamic Classes
-```javascript
-createVNode('button', {
-    class: `btn ${isActive ? 'active' : ''} ${isDisabled ? 'disabled' : ''}`
-}, 'Button')
-```
-
-### List with Keys
-```javascript
-createVNode('ul', {},
-    ...items.map(item =>
-        createVNode('li', { 'data-id': item.id }, item.name)
-    )
-)
-```
-
 ----------
-### Footnote:
+## Footnote:
 
-## Virtual DOM Rendering
+### Client-side routing 
+Client side routing lets your app change the URL and display new content instantly, all without reloading the page or asking the server for a new one
+
+### Virtual DOM Rendering
 A virtual DOM is a fast, in-memory version of the real DOM. When your app changes, only the differences are updated in the real DOM, making updates quicker and more efficient.
 
-## Client-side routing 
-Client side routing lets your app change the URL and display new content instantly, all without reloading the page or asking the server for a new one
+### Virtual Nodes 
+
+The framework utilizes virtual nodes (VNodes) to represent DOM elements before rendering. A VNode is a JavaScript object containing three main components:
+- `tag` - HTML tag name (e.g., 'div', 'button')
+- `attrs` - Object containing attributes (such as class, id) and event handlers (such as click, onclick)
+- `children` - Array of child nodes (strings, numbers, or other VNodes)
+
+### Rendering Process
+
+1. Create VNodes using `createVNode()` function
+2. Mount the root VNode using `mount()` function
+3. The framework converts VNodes to real DOM elements
+
+Example:
+`````
+const myVNode = createVNode('button', { class: 'primary', onclick: handleClick }, 'Click Me')
+`````
+This creates a virtual button element with a class, a click event, and the label “Click Me.” When rendered, it produces the following HTML structure and executes the handleClick function when clicked:
+
+````
+<button class="primary">Click Me</button>
+````
 
 
 ## Contributors
 | Name           | GitHub Profile                        | 
 |----------------|---------------------------------------|
 | Markus Amberla        | [MarkusYPA](https://github.com/MarkusYPA) | 
-| Mayuree Reunsati      | [mareerray](https://github.com/mareerray)         | 
+| Mayuree Reunsati      | [mareerray](https://github.com/mareerray) | 
 | Parisa Rahimi         | [prahimi94](https://github.com/prahimi94) | 
-| Roope Hongisto        | [RuBoMa](https://github.com/RuBoMa)         | 
-| Toft Diederichs       | [Toft08](https://github.com/Toft08) | 
+| Roope Hongisto        | [RuBoMa](https://github.com/RuBoMa)       | 
+| Toft Diederichs       | [Toft08](https://github.com/Toft08)       | 
 
