@@ -124,6 +124,12 @@ function sidebar() {
                 createVNode('li', {}, 'Nest elements'),
                 createVNode('li', {}, 'Dynamically render based on application state')
             ),
+            createVNode('footer', {},
+                createVNode('a', { 
+                    href: 'https://github.com/01-edu/public/tree/master/subjects/mini-framework',
+                    target: '_blank',
+                }, 'View on GitHub')
+            )
         ),
     )
 }
