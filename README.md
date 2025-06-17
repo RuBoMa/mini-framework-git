@@ -12,8 +12,8 @@ This documentation provides comprehensive guidance on framework implementation a
     - [Architecture](#architecture)
     - [Key Benefits](#key-benefits)
 2. [Prerequisites](#prerequisites)
-3. [Framework Testing](#framework-testing)
-4. [Getting Started](#getting-started)
+3. [Getting Started](#getting-started)
+4. [Framework Testing](#framework-testing)
 5. [Creating Elements](#creating-elements)
     - [Basic Elements](#basic-elements)
     - [Nested Elements](#nested-elements)
@@ -24,27 +24,23 @@ This documentation provides comprehensive guidance on framework implementation a
     - [Input Events](#input-events)
     - [Keyboard Events](#keyboard-events)
 7. [Routing](#routing)
+    - [Router Setup](#router-setup)
     - [Navigation Links](#navigation-links)
-    - [Programmatic Navigation](#programatic-navigation)
 8. [State Management](#state-management)
-    - [Simple State Pattern](#simple-state-pattern)
-    - [Component Pattern](#component-pattern)
-9. [Complete Examples](#complete-examples)
-    - [Todo List Component](#todo-list-component)
-10. [API Reference](#api-reference)
+   
+9. [API Reference](#api-reference)
     - [mini.js](#minijs)
     - [router.js](#routerjs)
     - [state.js](#statejs)
-11. [Best Practices](#best-practices)
-12. [Footnote](#footnote)
-13. [Contributors](#contributors)
+10. [Glossary](#glossary)
+11. [Contributors](#contributors)
 
 ## Framework Features
 
 ### Core Capabilities
 - **Virtual DOM Rendering** - Efficient DOM manipulation through [virtual nodes](#virtual-nodes)
 - **Client-Side Routing** - Hash-based navigation for single-page applications  
-- **Event Handling** - Comprehensive event management with `on` prefix syntax
+- **Event Handling** - Comprehensive event management 
 - **Lightweight Design** - No external dependencies or build tools required
 
 ### Use Cases
@@ -80,12 +76,20 @@ Mini Framework requires the following components:
   - `index.html` – application loader and script references
 
 - **No installation or build tools required**  
-  Open `index.html` in a browser to run the application.
+  Serve the project directory with a static file server and open `index.html` in a browser to run the application.
 
-  The browser environment must supports ES module imports. Include the following in index.html:
-  ````
+  > Tip: Use a simple static server like [http-server](https://www.npmjs.com/package/http-server) or Python's built-in server:
+  > 
+  > ```sh
+  > npx http-server .
+  > # or
+  > python3 -m http.server
+  > ```
+
+  The browser environment must supports ES module imports. Include the following in `index.html`:
+  ```javascript
   `<script type="module" src="./app/app.js"></script>`
-  ````
+  ```
 
 **Recommended folder structure:**
 ````
@@ -100,9 +104,59 @@ Mini Framework requires the following components:
 └── index.html
 ````
 
+## Getting Started
+
+### Basic Setup
+
+Initialize applications using Mini Framework with the following steps:
+
+### 1. Import the core functions from framework files:
+These import statements should be placed at the top of the main application file (typically app.js in the app folder):
+
+Note: Import paths must be adjusted to correspond with the project's folder structure as specified in the Prerequisites section
+
+```javascript
+import { createVNode, mount } from './mini.js'
+import { initRouter, isActiveRoute } from './router.js'
+import { state, subscribe } from '../framework/state.js'
+````
+- `createVnode` creates virtual DOM nodes (VNodes)
+- `mount` renders the application to the web page
+- `initRouter` initializes client-side routing
+- `isActiveRoute` checks if a route is currently active
+- `state` manages global application state
+- `subscribe` registers functions to run on state changes
+
+### 2. Define the application component
+
+Create a function called `App` that returns the application structure using VNodes:
+
+```javascript
+function App() {
+    return createVNode('div', { class: 'app' }, 'Hello World!')
+}
+```
+- This example creates a `<div>` with the class `app` and the text "Hello World" inside. 
+
+### 3. Mount the application and enable reactive state
+
+Wrap the mounting process in an update function and subscribe it to state changes:
+
+```javascript
+function update() {
+    mount(document.body, app())
+}
+subscribe(()=> update())
+```
+ Run initial mounting:
+```javascript
+update()
+```
+This instructs the framework to display VNode returned by `App()` inside the `<body>` of the HTML page and re-render whenever state properties change.
+
 ## Framework Testing
 
-The following test demonstrates core framework features:
+The following test demonstrates core framework features and can be used to verify functionality:
 
 **Features tested:**
 - ✅ Virtual DOM creation with `createVNode`
@@ -111,13 +165,17 @@ The following test demonstrates core framework features:
 - ✅ State management with reactive updates
 - ✅ Event handling
 
-Copy the code below into app.js for testing purpose and open it in a browser to verify framework functionality. Ensure file paths match the folder structure.
+Copy the code below into app.js and open it in a browser to verify framework functionality:
 
 
 ```javascript
 import { createVNode, mount } from '../framework/mini.js'
 import { initRouter } from '../framework/router.js'
-import { state } from '../framework/state.js'
+import { state, subscribe } from '../framework/state.js'
+
+function update() {
+    mount(document.body, App())
+}
 
 function App() {
     const currentRoute = window.location.hash.slice(1) || '/home'
@@ -130,7 +188,7 @@ function App() {
             createVNode('a', { 
                 href: '#/home',
                 onclick: (e) => { 
-                    e.preventDefault(); 
+                    e.preventDefault() 
                     window.location.hash = '#/home' 
                 }
             }, 'Home'),
@@ -138,7 +196,7 @@ function App() {
             createVNode('a', { 
                 href: '#/about',
                 onclick: (e) => { 
-                    e.preventDefault(); 
+                    e.preventDefault() 
                     window.location.hash = '#/about' 
                 }
             }, 'About')
@@ -163,14 +221,12 @@ function App() {
 }
 
 // Initialize router
-initRouter(() => {
-    mount(document.body, App())
-})
+initRouter(() => {update()})
 
-// Initialize and mount
+// Initialize and subscribe update() to state changes
 state.count = 0
-mount(document.body, App())
-
+subscribe(() => update())
+update()
 ```
 **Test functionality:**
 - Creates an application with Home/About navigation
@@ -178,46 +234,6 @@ mount(document.body, App())
 - Includes a counter demonstrating state updates
 - Re-renders the entire application when state or route changes
 
-## Getting Started
-
-### Basic Setup
-
-To initialize an application using the Mini Framework, follow these steps:
-
-### 1. Import the core functions from framework files:
-These import statements should be placed at the top of the main application file (typically app.js in the app folder):
-
-Note: Import paths must be adjusted to correspond with the project's folder structure as specified in the Prerequisites section
-
-```javascript
-import { createVNode, mount } from './mini.js'
-import { initRouter, isActiveRoute } from './router.js'
-import { state } from '../framework/state.js'
-````
-- `createVnode` creates virtual DOM nodes (VNodes)
-- `mount` renders the application to the web page
-- `initRouter` initializes client-side routing
-- `isActiveRoute` checks if a route is currently active
-- `state` manages global application state
-
-### 2. Define the application component
-
-Create a function called `App` that returns the application structure using VNodes:
-
-````
-function App() {
-    return createVNode('div', { class: 'app' }, 'Hello World!')
-}
-`````
-- This example creates a `<div>` with the class `app` and the text "Hello World" inside. This function can be expanded to return more complex layouts as the application grows.
-
-### 3. Mount the application to the page
-
-Render the application by mounting it to the DOM:
-````
-mount(document.body, App())
-````
-This instructs the framework to take the VNode returned by `App()` and display it inside the `<body>` of the HTML page. 
 
 ## Creating Elements
 ### Basic Elements
@@ -291,13 +307,7 @@ createVNode('select', { class: 'dropdown' },
 
 ## Event Handling
 
-Add event handlers using the `on` prefix in attributes:
 
-```javascript
-onclick → 'click'
-onkeydown → 'keydown'
-onchange → 'change'
-```
 ### Click Events
 
 ```javascript
@@ -392,162 +402,99 @@ createVNode('nav', { class: 'navigation' },
 )
 ```
 
-### Programmatic Navigation
-
-```javascript
-// Navigate programmatically
-createVNode('button', {
-    onclick: () => navigateTo('/dashboard')
-}, 'Go to Dashboard')
-```
-
 ## State Management
 
-The framework doesn't provide built-in state management, but you can implement it using plain JavaScript objects and re-rendering:
+Mini Framework includes a reactive state management system that automatically triggers re-renders when data changes.
 
-### Simple State Pattern
+### Basic Usage
 
+**1. Import state and subscribe:**
 ```javascript
-let state = {
-    count: 0,
-    user: null,
-    items: []
-}
+import { state, subscribe } from '../framework/state.js'
+```
 
-function updateState(newState) {
-    state = { ...state, ...newState }
-    render()
-}
+**2. Use the state object directly:**
+```javascript
+// Example: incrementing a counter
+state.count = (state.count || 0) + 1
+```
 
-function render() {
-    mount(document.getElementById('app'), App())
+**3. Subscribe the update/render function:**
+```javascript
+subscribe(() => update())
+```
+
+**4. Example:**
+```javascript
+import { createVNode, mount } from '../framework/mini.js'
+import { state, subscribe } from '../framework/state.js'
+
+function update() {
+    mount(document.body, App())
 }
 
 function App() {
     return createVNode('div', {},
-        createVNode('h1', {}, `Count: ${state.count}`),
+        createVNode('h1', {}, `Count: ${state.count || 0}`),
         createVNode('button', {
-            onclick: () => updateState({ count: state.count + 1 })
+            onclick: () => { state.count = (state.count || 0) + 1 }
         }, 'Increment')
     )
 }
+
+subscribe(() => update())
+update()
 ```
 
-### Component Pattern
+### How it works
 
-```javascript
-function Counter({ initialValue = 0 }) {
-    return createVNode('div', { class: 'counter' },
-        createVNode('span', {}, `Value: ${initialValue}`),
-        createVNode('button', {
-            onclick: () => updateCounter(initialValue + 1)
-        }, '+'),
-        createVNode('button', {
-            onclick: () => updateCounter(initialValue - 1)
-        }, '-')
-    )
-}
+- The `state` object is implemented as a [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) that detects changes to any property including nested objects and arrays.
+- When the `state` is updated, all subscribed functions are called automatically, ensuring that the application remains in sync with the latest data
+- Any type of data can be stored in the state object, including arrays, objects, and primitive values.
 
-// Usage
-function App() {
-    return createVNode('div', {},
-        Counter({ initialValue: state.count })
-    )
-}
-```
+### Best Practices
 
-## Complete Examples
+- Always mutate the `state` object directly (for example, `state.tasks.push(...)`, `state.filter = 'active'`).
+- Avoid replacing the `state` object itself (avoid `state = {...}`).
+- Subscribe the main render/update function once during application initialization to ensure consistent updates in response to state changes.
 
-### Todo List Component
 
-```javascript
-function TodoApp() {
-    const visibleTodos = state.todos.filter(todo => {
-        if (state.filter === 'active') return !todo.completed
-        if (state.filter === 'completed') return todo.completed
-        return true
-    })
-
-    return createVNode('div', { class: 'todo-app' },
-        // Header with input
-        createVNode('header', {},
-            createVNode('h1', {}, 'Todos'),
-            createVNode('input', {
-                type: 'text',
-                class: 'new-todo',
-                placeholder: 'What needs to be done?',
-                onkeydown: (e) => {
-                    if (e.key === 'Enter' && e.target.value.trim()) {
-                        addTodo(e.target.value.trim())
-                        e.target.value = ''
-                    }
-                }
-            })
-        ),
-        
-        // Todo list
-        createVNode('ul', { class: 'todo-list' },
-            ...visibleTodos.map(todo => TodoItem(todo))
-        ),
-        
-        // Footer with filters
-        createVNode('footer', {},
-            createVNode('span', {}, `${getActiveCount()} items left`),
-            createVNode('div', { class: 'filters' },
-                FilterLink('all'),
-                FilterLink('active'),
-                FilterLink('completed')
-            )
-        )
-    )
-}
-
-function TodoItem(todo) {
-    return createVNode('li', {
-        class: todo.completed ? 'completed' : ''
-    },
-        createVNode('input', {
-            type: 'checkbox',
-            checked: todo.completed,
-            onchange: () => toggleTodo(todo.id)
-        }),
-        createVNode('label', {
-            ondblclick: () => startEditing(todo.id)
-        }, todo.text),
-        createVNode('button', {
-            class: 'destroy',
-            onclick: () => deleteTodo(todo.id)
-        })
-    )
-}
-```
 ## API Reference
 
 ### mini.js
 
 #### `createVNode(tag, attrs, ...children)`
-Creates a virtual node object that represents a DOM element before rendering.
+Creates a virtual node object that representing a DOM element.
+
+**Parameters**:
 - **tag** (string): HTML tag name (e.g., 'div', 'button', 'input')
-- **attrs** (object): Attributes and event handlers object
+- **attrs** (object): Attributes and event handlers
     - Standard HTML attributes (class, id, style, etc.)
     - Event handlers with 'on' prefix (onclick, onkeydown, onchange, etc.)
     - Boolean attributes (checked, disabled, autofocus, etc.)
-- **children** (array): Child nodes which can be strings, numbers, or other VNodes
-- **Returns**: VNode object with structure { tag, attrs, children }
+- **children** (array): Child nodes (strings, numbers, or other VNodes)
+
+**Returns**: VNode object with structure { tag, attrs, children }
 
 #### `render(vnode)`
-Converts a virtual node into a real DOM element with full attribute and event handling.
+Converts a virtual node into a real DOM element.
+
+**Parameters**:
 - **vnode** (VNode|string|number): Virtual node to render
-    - VNode objects are converted to DOM elements
-    - Strings and numbers become text nodes
-    - Event handlers are automatically bound using addEventListener
-- **Returns**: DOM Element or Text Node
-- **Event Handling**: Automatically converts 'on' prefixed attributes to event listeners
+
+**Returns**: DOM Element or Text Node
+
+**Features**:
+- Automatically converts 'on' prefixed attributes to event listeners
+- Handles strings and numbers as text nodes
+- Recursively renders child elements
 
 #### `mount(root, vnode)`
-Mounts rendered virtual nodes to a target DOM element, replacing existing content.
-- **root** (Element):  Target DOM element where content will be mounted
-- **vnode** (VNode|Array): Virtual node or array of virtual nodes to mount
+Mounts rendered virtual nodes to a target DOM element.
+
+**Parameters**:
+- **root** (Element): Target DOM element
+- **vnode** (VNode|Array): Virtual node to mount
 - **Behavior**:
     - Clears existing content with innerHTML = ''
     - Handles both single vnodes and arrays of vnodes
@@ -557,23 +504,27 @@ Mounts rendered virtual nodes to a target DOM element, replacing existing conten
 ### router.js
 
 #### `initRouter(callback)`
-Initializes the hash-based router system for single-page application navigation.
+Initializes the hash-based router system.
+
+**Parameters**:
 - **callback** (function): Function called when route changes
-    - Receives the new route as a parameter
-    - Triggered on initial page load and hash changes
-- **Functionality**:
-    - Sets up hashchange event listener for browser navigation
-    - Handles initial route on page load
-    - Enables back/forward button support
+
+**Features**:
+- Sets up a hashchange event listener on the window object to detect navigation changes including back and forward button usage
+- Handles initial route on page load
 
 #### `isActiveRoute(route)`
-Determines if a specified route matches the current active route.
-- **route** (string): Route to check against current route
-- **Returns**: Boolean indicating if route is currently active
-- **Special Handling**:
-    - Normalizes routes (treats '/' and '' as equivalent)
-    - Handles 'all' filter matching empty routes
-    - Used for highlighting active navigation links
+Determines if a route matches the current active route.
+
+**Parameters**:
+- **route** (string): Route to check 
+
+**Returns**: Boolean indicating if the given route matches the current route
+
+**Special Handling**:
+    - Normalizes routes by treating '/' as equivalent to an empty string ''
+    - Returns true if the normalized current route matches the normalized input route or if the current route is empty and the input route is 'all'
+
 #### `handleRouteChange()` (Internal)
 Internal function that processes route changes and updates the current route state.
 - **Functionality**:
@@ -581,33 +532,37 @@ Internal function that processes route changes and updates the current route sta
     - Updates internal currentRoute variable
     - Calls registered callback function with new route
 
+**Note:** This function is called automatically by the router and should not be invoked directly by application code.
+
 ### state.js
 
-state (Object)
-Global application state object that manages todo application data and UI state.
+#### `state` (Object)
 
-State Structure:
+Global application state object.  
+Proxy-based reactivity: any changes to properties (including nested objects/arrays) automatically notify all subscribers.
 
-````
-const state = {
-    tasks: [],           // Array of task objects
-    filter: 'all',       // Current filter ('all', 'active', 'completed')
-    editingId: null,     // ID of task currently being edited
-    currentId: 1         // Counter for generating unique task IDs
-}
-````
+**Initial State Example:**
+```javascript
+export const state = makeReactive({
+    tasks: [],        //Array to hold task objects
+    filter: 'all',    //String indicating current filter ('all', 'active', or 'completed')
+    editingId: null, //ID of the task currently being edited (null if none)
+    currentId: 1,    //Numeric ID counter for new tasks
+})
+```
+#### `subscribe(callback)`
 
+Registers a function to run when state changes.
 
-## Best Practices
+**Parameters**:
+- callback (function): Function to execute on state changes
 
-1. **Component Functions**: Use functions that return VNodes for reusable components
-2. **State Updates**: Always re-render after state changes
-3. **Event Handlers**: Use arrow functions to maintain scope
-4. **Key Attributes**: Use unique identifiers for list items when possible
-5. **Performance**: Consider batching updates for better performance
+**Implementation Details**:
+- The state object is created using a recursive Proxy.
+- On property write, all subscribed functions are notified.
+- Subscribers are stored in an internal array and called on state changes.
 
-----------
-## Footnote:
+## Glossary:
 
 ### Client-side routing 
 Client side routing lets your app change the URL and display new content instantly, all without reloading the page or asking the server for a new one
@@ -629,14 +584,14 @@ The framework utilizes virtual nodes (VNodes) to represent DOM elements before r
 3. The framework converts VNodes to real DOM elements
 
 Example:
-`````
+```javascript
 const myVNode = createVNode('button', { class: 'primary', onclick: handleClick }, 'Click Me')
-`````
+```
 This creates a virtual button element with a class, a click event, and the label “Click Me.” When rendered, it produces the following HTML structure and executes the handleClick function when clicked:
 
-````
+```javascript
 <button class="primary">Click Me</button>
-````
+```
 
 
 ## Contributors
@@ -646,5 +601,5 @@ This creates a virtual button element with a class, a click event, and the label
 | Mayuree Reunsati      | [mareerray](https://github.com/mareerray) | 
 | Parisa Rahimi         | [prahimi94](https://github.com/prahimi94) | 
 | Roope Hongisto        | [RuBoMa](https://github.com/RuBoMa)       | 
-| Toft Diederichs       | [Toft08](https://github.com/Toft08)       | 
+| Toft Diederichs       | [Toft08](https://github.com/Toft08)       |
 
