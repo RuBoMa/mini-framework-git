@@ -29,7 +29,7 @@ function update() {
     })
 }
 
-
+// app renders the main application structure
 function app() {
     const visibleTasks = state.tasks.filter(task => {
         if (state.filter === 'active') return !task.completed
@@ -43,7 +43,7 @@ function app() {
         footer()
     ]
 }
-
+// sidebar renders the left sidebar with framework info and links
 function sidebar() {
     return createVNode('aside', { class: 'learn' },
         createVNode('header', {},
@@ -68,7 +68,7 @@ function sidebar() {
         ),
     )
 }
-
+// mainSection renders the main todo app section with tasks and input
 function mainSection(visibleTasks) {
     return createVNode('section', { class: 'todoapp' },
         createVNode('header', { class: 'header' },
@@ -176,7 +176,7 @@ function taskItem(task) {
         })
     )
 }
-
+// infoFooter shows the footer with task count, filters, and clear completed button
 function infoFooter() {
     const activeCount = state.tasks.filter(t => !t.completed).length
 
