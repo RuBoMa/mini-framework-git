@@ -3,7 +3,7 @@
 export function createVNode(tag, attrs = {}, ...children) {
     return { tag, attrs, children }
 }
-
+// render takes a virtual node (vnode) and returns a DOM element
 export function render(vnode) {
     if (typeof vnode === 'string' || typeof vnode === 'number') {
         return document.createTextNode(vnode)
@@ -27,7 +27,7 @@ export function render(vnode) {
 
     return el
 }
-
+// mount takes a root DOM element and a virtual node (vnode) and renders the vnode into the root
 export function mount(root, vnode) {
     if (!(root instanceof Element)) {
         throw new Error('Root must be a DOM Element')
