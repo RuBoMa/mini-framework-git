@@ -45,7 +45,6 @@ This documentation provides comprehensive guidance on framework implementation a
 - **Virtual DOM Rendering** - Efficient DOM manipulation through [virtual nodes](#virtual-nodes)
 - **Client-Side Routing** - Hash-based navigation for single-page applications  
 - **Event Handling** - Comprehensive event management with `on` prefix syntax
-- **Component Architecture** - Reusable functions returning VNodes
 - **Lightweight Design** - No external dependencies or build tools required
 
 ### Use Cases
@@ -78,7 +77,6 @@ Mini Framework requires the following components:
   - `router.js` – client-side routing functionality
   - `state.js`- application state management
   - `app.js` – main application
-  - `app.css` - application styles
   - `index.html` – application loader and script references
 
 - **No installation or build tools required**  
@@ -147,11 +145,11 @@ function App() {
         ),
         
         // Route content
-        createVNode('div', { style: 'margin-top: 1em;' }, [
+        createVNode('div', { style: 'margin-top: 1em;' }, 
             currentRoute === '/home' 
                 ? createVNode('p', {}, 'Welcome to the home page!')
                 : createVNode('p', {}, 'This is the about page.')
-        ]),
+        ),
         
         // State management demo
         createVNode('p', {}, `Count: ${state.count}`),
