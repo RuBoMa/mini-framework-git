@@ -20,14 +20,8 @@ This documentation provides comprehensive guidance on framework implementation a
     - [Lists and Arrays](#lists-and-arrays)
     - [Input Elements](#input-elements)
 6. [Event Handling](#event-handling)
-    - [Click Events](#click-events)
-    - [Input Events](#input-events)
-    - [Keyboard Events](#keyboard-events)
 7. [Routing](#routing)
-    - [Router Setup](#router-setup)
-    - [Navigation Links](#navigation-links)
 8. [State Management](#state-management)
-   
 9. [API Reference](#api-reference)
     - [mini.js](#minijs)
     - [router.js](#routerjs)
@@ -35,7 +29,7 @@ This documentation provides comprehensive guidance on framework implementation a
 10. [Glossary](#glossary)
 11. [Contributors](#contributors)
 
-## Framework Features
+## ⚡ Framework Features
 
 ### Core Capabilities
 - **Virtual DOM Rendering** - Efficient DOM manipulation through [virtual nodes](#virtual-nodes)
@@ -61,7 +55,7 @@ Three-layer structure:
 - Transparent implementation for educational value
 - Flexible architecture without enforced patterns
 
-## Prerequisites
+## ⚠️ Prerequisites
 
 Mini Framework requires the following components:
 
@@ -104,7 +98,7 @@ Mini Framework requires the following components:
 └── index.html
 ````
 
-## Getting Started
+## 🚀 Getting Started
 
 ### Basic Setup
 
@@ -154,7 +148,7 @@ update()
 ```
 This instructs the framework to display VNode returned by `App()` inside the `<body>` of the HTML page and re-render whenever state properties change.
 
-## Framework Testing
+## 🧪 Framework Testing
 
 The following test demonstrates core framework features and can be used to verify functionality:
 
@@ -307,100 +301,169 @@ createVNode('select', { class: 'dropdown' },
 
 ## Event Handling
 
+Mini Framework lets you attach event handlers directly to your virtual nodes using standard DOM event names (like `onclick`, `oninput`, `onchange`, etc.).  
+When you define an event handler in the attributes object of `createVNode`, it will be bound to the corresponding DOM element after rendering.
 
-### Click Events
+### Basic Usage
+1. Define event handlers as attributes:
 
 ```javascript
 createVNode('button', {
-    class: 'btn',
     onclick: () => {
         console.log('Button clicked!')
-        // Update state and re-render
-        updateApp()
     }
 }, 'Click Me')
 ```
-
-### Input Events
+2. Access event object in handlers:
 
 ```javascript
-// Text input with change handler
-createVNode('input', {
-    type: 'text',
-    class: 'search',
-    onchange: (e) => {
-        const value = e.target.value
-        console.log('Input changed:', value)
-    }
-})
-
-// Real-time input handling
 createVNode('input', {
     type: 'text',
     oninput: (e) => {
-        // Updates as user types
-        handleSearch(e.target.value)
+        console.log('Input value:', e.target.value)
     }
 })
 ```
-
-### Keyboard Events
+3. Handle multiple event types:
 
 ```javascript
 createVNode('input', {
     type: 'text',
-    class: 'todo-input',
-    onkeydown: (e) => {
-        if (e.key === 'Enter') {
-            addTodo(e.target.value)
-            e.target.value = ''
-        }
-        if (e.key === 'Escape') {
-            cancelEdit()
-        }
-    }
+    onfocus: () => console.log('Input focused'),
+    onblur: () => console.log('Input blurred'),
+    onchange: (e) => console.log('Value changed:', e.target.value)
 })
 ```
+4. Example:
+
+```javascript
+import { createVNode, mount } from '../framework/mini.js'
+import { state, subscribe } from '../framework/state.js'
+
+function update() {
+    mount(document.body, App())
+}
+
+function App() {
+    return createVNode('div', {},
+        createVNode('h1', {}, `Count: ${state.count || 0}`),
+        createVNode('button', {
+            class: 'btn',
+            onclick: () => {
+                state.count = (state.count || 0) + 1
+                console.log('Button clicked!')
+            }
+        }, 'Increment'),
+        createVNode('input', {
+            type: 'text',
+            class: 'todo-input',
+            onkeydown: (e) => {
+                if (e.key === 'Enter') {
+                    addTodo(e.target.value)
+                    e.target.value = ''
+                }
+                if (e.key === 'Escape') {
+                    cancelEdit()
+                }
+            }
+        })
+    )
+}
+
+subscribe(() => update())
+update()
+```
+### How It Works
+- Event handlers defined in `createVNode` attributes are automatically detected by the framework through the "on" prefix
+- The framework binds these handlers to actual DOM elements during the rendering process
+- Handler functions receive the native DOM event object with all standard properties
+
+### Best Practices
+- Use arrow functions for event handlers to maintain lexical scope and avoid this binding issues
+- Keep event handlers focused on single responsibilities and avoid complex logic within handlers
+- Always handle potential errors in event handlers to prevent application crashes
+- Use event delegation for dynamic content to improve performance with large lists
 
 ## Routing
 
-The framework includes a simple hash-based router for single-page applications.
+The Mini Framework includes a simple hash-based router for single-page applications that enables navigation without page reloads.
 
-### Router Setup
+### Basic Usage
+1. Import router functions:
 
 ```javascript
 import { initRouter, isActiveRoute } from './router.js'
-
-// Define route handler
-function handleRouteChange(route) {
-    console.log('Route changed to:', route)
-    // Update your app state based on route
-    updateAppForRoute(route)
-}
-
-// Initialize router
-initRouter(handleRouteChange)
 ```
-
-### Navigation Links
+2. Define route handler function:
 
 ```javascript
-// Create navigation links
-createVNode('nav', { class: 'navigation' },
-    createVNode('a', { 
-        href: '#/', 
-        class: isActiveRoute('/') ? 'active' : '' 
-    }, 'Home'),
-    createVNode('a', { 
-        href: '#/about', 
-        class: isActiveRoute('/about') ? 'active' : '' 
-    }, 'About'),
-    createVNode('a', { 
-        href: '#/contact', 
-        class: isActiveRoute('/contact') ? 'active' : '' 
-    }, 'Contact')
-)
+function handleRouteChange(route) {
+    console.log('Route changed to:', route)
+    // Update app state based on route
+    updateAppForRoute(route)
+}
 ```
+3. Initialize the router:
+
+```javascript
+initRouter(handleRouteChange)
+```
+4. Example:
+
+```javascript
+import { createVNode, mount } from '../framework/mini.js'
+import { initRouter, isActiveRoute } from '../framework/router.js'
+
+function update() {
+    mount(document.body, App())
+}
+
+function handleRouteChange(route) {
+    console.log('Current route:', route)
+    update()
+}
+
+function App() {
+    const currentRoute = window.location.hash.slice(1) || '/'
+    
+    return createVNode('div', {},
+        createVNode('nav', { class: 'navigation' },
+            createVNode('a', { 
+                href: '#/', 
+                class: isActiveRoute('/') ? 'active' : '' 
+            }, 'Home'),
+            createVNode('a', { 
+                href: '#/about', 
+                class: isActiveRoute('/about') ? 'active' : '' 
+            }, 'About'),
+            createVNode('a', { 
+                href: '#/contact', 
+                class: isActiveRoute('/contact') ? 'active' : '' 
+            }, 'Contact')
+        ),
+        createVNode('main', {},
+            currentRoute === '/' ? 'Home Page' :
+            currentRoute === '/about' ? 'About Page' :
+            currentRoute === '/contact' ? 'Contact Page' :
+            '404 - Page Not Found'
+        )
+    )
+}
+
+initRouter(handleRouteChange)
+update()
+```
+
+### How It Works
+- The router monitors hash changes in the URL and automatically detects route transitions
+- Route handlers are registered with the router and called when matching routes are accessed
+- The framework maintains application state synchronization with the current URL
+
+### Best Practices
+- Initialize the router once during application startup to ensure consistent navigation behavior
+- Use `isActiveRoute()` to conditionally apply CSS classes for active navigation states
+- Keep route handlers lightweight and focused on updating application state rather than complex logic
+- Always provide fallback content for unmatched routes to improve user experience
 
 ## State Management
 
@@ -459,9 +522,9 @@ update()
 - Subscribe the main render/update function once during application initialization to ensure consistent updates in response to state changes.
 
 
-## API Reference
+## 📚 API Reference
 
-### mini.js
+### 🎯 mini.js
 
 #### `createVNode(tag, attrs, ...children)`
 Creates a virtual node object that representing a DOM element.
@@ -501,7 +564,7 @@ Mounts rendered virtual nodes to a target DOM element.
     - Validates vnode structure before rendering
 - **Throws**: Error if root is not a DOM Element or vnode is invalid
 
-### router.js
+### 🎯 router.js
 
 #### `initRouter(callback)`
 Initializes the hash-based router system.
@@ -527,14 +590,15 @@ Determines if a route matches the current active route.
 
 #### `handleRouteChange()` (Internal)
 Internal function that processes route changes and updates the current route state.
-- **Functionality**:
-    - Extracts route from window.location.hash
-    - Updates internal currentRoute variable
-    - Calls registered callback function with new route
+
+**Functionality**:
+- Extracts route from window.location.hash
+- Updates internal currentRoute variable
+- Calls registered callback function with new route
 
 **Note:** This function is called automatically by the router and should not be invoked directly by application code.
 
-### state.js
+### 🎯 state.js
 
 #### `state` (Object)
 
