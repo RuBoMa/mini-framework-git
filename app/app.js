@@ -86,7 +86,7 @@ function mainSection(visibleTasks) {
                 autofocus: '',
                 onkeydown: e => {
                     if (e.key === 'Enter' && e.target.value.trim()) {
-                        state.tasks.push({
+                        state.tasks.unshift({
                             id: state.currentId++,
                             name: e.target.value.trim(),
                             completed: false,
