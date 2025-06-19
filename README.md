@@ -357,6 +357,7 @@ function App() {
         createVNode('input', {
             type: 'text',
             class: 'todo-input',
+            placeholder: 'New todo',
             onkeydown: (e) => {
                 if (e.key === 'Enter') {
                     addTodo(e.target.value)
