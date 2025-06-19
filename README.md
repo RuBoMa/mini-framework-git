@@ -10,7 +10,6 @@ This documentation provides comprehensive guidance on framework implementation a
     - [Core Capabilities](#core-capabilities)
     - [Use cases](#use-cases)
     - [Architecture](#architecture)
-    - [Key Benefits](#key-benefits)
 2. [Prerequisites](#prerequisites)
 3. [Getting Started](#getting-started)
 4. [Framework Testing](#framework-testing)
@@ -22,14 +21,14 @@ This documentation provides comprehensive guidance on framework implementation a
 6. [Event Handling](#event-handling)
 7. [Routing](#routing)
 8. [State Management](#state-management)
-9. [API Reference](#api-reference)
+9. [Framework Reference](#framework-reference)
     - [mini.js](#minijs)
     - [router.js](#routerjs)
     - [state.js](#statejs)
 10. [Glossary](#glossary)
 11. [Contributors](#contributors)
 
-## ⚡ Framework Features
+## Framework Features
 
 ### Core Capabilities
 - **Virtual DOM Rendering** - Efficient DOM manipulation through [virtual nodes](#virtual-nodes)
@@ -45,17 +44,14 @@ This documentation provides comprehensive guidance on framework implementation a
 
 ### Architecture
 Three-layer structure:
-1. **Virtual DOM Layer** [(`mini.js`)](#minijs) - VNode creation and management
+1. **Virtual DOM Layer** [(`mini.js`)](#minijs) - Virtual node creation and management
 2. **Routing Layer** [(`router.js`)](#routerjs) - Client-side navigation
 3. **State Layer** [(`state.js`)](#statejs) - Application data management
 
-### Key Benefits
-- Simple API with minimal learning curve
-- Browser-compatible ES modules (Chrome, Firefox, Edge, Safari)
-- Transparent implementation for educational value
-- Flexible architecture without enforced patterns
 
-## ⚠️ Prerequisites
+#### [Back to top](#mini-framework-documentation)
+
+## Prerequisites
 
 Mini Framework requires the following components:
 
@@ -80,9 +76,9 @@ Mini Framework requires the following components:
   > python3 -m http.server
   > ```
 
-  The browser environment must supports ES module imports. Include the following in `index.html`:
+  The browser environment must support ES module imports. Include the following in `index.html`:
   ```javascript
-  `<script type="module" src="./app/app.js"></script>`
+  `<script type="module" src="app/app.js"></script>`
   ```
 
 **Recommended folder structure:**
@@ -97,8 +93,9 @@ Mini Framework requires the following components:
 |   └── app.css
 └── index.html
 ````
+#### [Back to top](#table-of-contents)
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Basic Setup
 
@@ -107,11 +104,11 @@ Initialize applications using Mini Framework with the following steps:
 ### 1. Import the core functions from framework files:
 These import statements should be placed at the top of the main application file (typically app.js in the app folder):
 
-Note: Import paths must be adjusted to correspond with the project's folder structure as specified in the Prerequisites section
+Note: Import paths must be adjusted to correspond with the project's folder structure as specified in the Prerequisites section.
 
 ```javascript
-import { createVNode, mount } from './mini.js'
-import { initRouter, isActiveRoute } from './router.js'
+import { createVNode, mount } from '../framework/mini.js'
+import { initRouter, isActiveRoute } from '../framework/router.js'
 import { state, subscribe } from '../framework/state.js'
 ````
 - `createVnode` creates virtual DOM nodes (VNodes)
@@ -138,7 +135,7 @@ Wrap the mounting process in an update function and subscribe it to state change
 
 ```javascript
 function update() {
-    mount(document.body, app())
+    mount(document.body, App())
 }
 subscribe(()=> update())
 ```
@@ -147,8 +144,9 @@ subscribe(()=> update())
 update()
 ```
 This instructs the framework to display VNode returned by `App()` inside the `<body>` of the HTML page and re-render whenever state properties change.
+#### [Back to top](#table-of-contents)
 
-## 🧪 Framework Testing
+## Framework Testing
 
 The following test demonstrates core framework features and can be used to verify functionality:
 
@@ -159,7 +157,7 @@ The following test demonstrates core framework features and can be used to verif
 - ✅ State management with reactive updates
 - ✅ Event handling
 
-Copy the code below into app.js and open it in a browser to verify framework functionality:
+Copy the code below into `app.js` and open it in a browser to verify framework functionality:
 
 
 ```javascript
@@ -228,6 +226,7 @@ update()
 - Includes a counter demonstrating state updates
 - Re-renders the entire application when state or route changes
 
+#### [Back to top](#table-of-contents)
 
 ## Creating Elements
 ### Basic Elements
@@ -298,6 +297,7 @@ createVNode('select', { class: 'dropdown' },
     createVNode('option', { value: 'blue' }, 'Blue')
 )
 ```
+#### [Back to top](#table-of-contents)
 
 ## Event Handling
 
@@ -357,6 +357,7 @@ function App() {
         createVNode('input', {
             type: 'text',
             class: 'todo-input',
+            placeholder: 'New todo',
             onkeydown: (e) => {
                 if (e.key === 'Enter') {
                     addTodo(e.target.value)
@@ -374,15 +375,17 @@ subscribe(() => update())
 update()
 ```
 ### How It Works
-- Event handlers defined in `createVNode` attributes are automatically detected by the framework through the "on" prefix
-- The framework binds these handlers to actual DOM elements during the rendering process
-- Handler functions receive the native DOM event object with all standard properties
+- Event handlers defined in `createVNode` attributes are automatically detected by the framework through the "on" prefix.
+- The framework binds these handlers to actual DOM elements during the rendering process.
+- Handler functions receive the native DOM event object with all standard properties.
 
 ### Best Practices
-- Use arrow functions for event handlers to maintain lexical scope and avoid this binding issues
-- Keep event handlers focused on single responsibilities and avoid complex logic within handlers
-- Always handle potential errors in event handlers to prevent application crashes
-- Use event delegation for dynamic content to improve performance with large lists
+- Use arrow functions for event handlers to maintain lexical scope and avoid this binding issues.
+- Keep event handlers focused on single responsibilities and avoid complex logic within handlers.
+- Always handle potential errors in event handlers to prevent application crashes.
+- Use event delegation for dynamic content to improve performance with large lists.
+
+#### [Back to top](#table-of-contents)
 
 ## Routing
 
@@ -392,7 +395,7 @@ The Mini Framework includes a simple hash-based router for single-page applicati
 1. Import router functions:
 
 ```javascript
-import { initRouter, isActiveRoute } from './router.js'
+import { initRouter, isActiveRoute } from '../framework/router.js'
 ```
 2. Define route handler function:
 
@@ -455,15 +458,17 @@ update()
 ```
 
 ### How It Works
-- The router monitors hash changes in the URL and automatically detects route transitions
-- Route handlers are registered with the router and called when matching routes are accessed
-- The framework maintains application state synchronization with the current URL
+- The router monitors hash changes in the URL and automatically detects route transitions.
+- Route handlers are registered with the router and called when matching routes are accessed.
+- The framework maintains application state synchronization with the current URL.
 
 ### Best Practices
-- Initialize the router once during application startup to ensure consistent navigation behavior
-- Use `isActiveRoute()` to conditionally apply CSS classes for active navigation states
-- Keep route handlers lightweight and focused on updating application state rather than complex logic
-- Always provide fallback content for unmatched routes to improve user experience
+- Initialize the router once at application startup to ensure consistent navigation behavior.
+- Use `isActiveRoute()` to conditionally apply CSS classes for active navigation states.
+- Keep route handlers lightweight and focused on updating application state rather than complex logic.
+- Always provide fallback content for unmatched routes to improve user experience.
+
+#### [Back to top](#table-of-contents)
 
 ## State Management
 
@@ -512,7 +517,7 @@ update()
 ### How it works
 
 - The `state` object is implemented as a [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) that detects changes to any property including nested objects and arrays.
-- When the `state` is updated, all subscribed functions are called automatically, ensuring that the application remains in sync with the latest data
+- When the `state` is updated, all subscribed functions are called automatically, ensuring that the application remains in sync with the latest data.
 - Any type of data can be stored in the state object, including arrays, objects, and primitive values.
 
 ### Best Practices
@@ -521,10 +526,11 @@ update()
 - Avoid replacing the `state` object itself (avoid `state = {...}`).
 - Subscribe the main render/update function once during application initialization to ensure consistent updates in response to state changes.
 
+#### [Back to top](#table-of-contents)
 
-## 📚 API Reference
+## Framework Reference
 
-### 🎯 mini.js
+### mini.js
 
 #### `createVNode(tag, attrs, ...children)`
 Creates a virtual node object that representing a DOM element.
@@ -559,12 +565,14 @@ Mounts rendered virtual nodes to a target DOM element.
 - **root** (Element): Target DOM element
 - **vnode** (VNode|Array): Virtual node to mount
 - **Behavior**:
-    - Clears existing content with innerHTML = ''
+    - Clears existing content with innerHTML = ""
     - Handles both single vnodes and arrays of vnodes
     - Validates vnode structure before rendering
 - **Throws**: Error if root is not a DOM Element or vnode is invalid
 
-### 🎯 router.js
+#### [Back to top](#table-of-contents)
+
+### router.js
 
 #### `initRouter(callback)`
 Initializes the hash-based router system.
@@ -585,8 +593,8 @@ Determines if a route matches the current active route.
 **Returns**: Boolean indicating if the given route matches the current route
 
 **Special Handling**:
-    - Normalizes routes by treating '/' as equivalent to an empty string ''
-    - Returns true if the normalized current route matches the normalized input route or if the current route is empty and the input route is 'all'
+- Normalizes routes by treating '/' as equivalent to an empty string ""
+- Returns true if the normalized current route matches the normalized input route or if the current route is empty and the input route is 'all'
 
 #### `handleRouteChange()` (Internal)
 Internal function that processes route changes and updates the current route state.
@@ -598,7 +606,9 @@ Internal function that processes route changes and updates the current route sta
 
 **Note:** This function is called automatically by the router and should not be invoked directly by application code.
 
-### 🎯 state.js
+#### [Back to top](#table-of-contents)
+
+### state.js
 
 #### `state` (Object)
 
@@ -608,10 +618,10 @@ Proxy-based reactivity: any changes to properties (including nested objects/arra
 **Initial State Example:**
 ```javascript
 export const state = makeReactive({
-    tasks: [],        //Array to hold task objects
-    filter: 'all',    //String indicating current filter ('all', 'active', or 'completed')
-    editingId: null, //ID of the task currently being edited (null if none)
-    currentId: 1,    //Numeric ID counter for new tasks
+    tasks: [],        // Array to hold task objects
+    filter: 'all',    // String indicating current filter ('all', 'active', or 'completed')
+    editingId: null, // ID of the task currently being edited (null if none)
+    currentId: 1,    // Numeric ID counter for new tasks
 })
 ```
 #### `subscribe(callback)`
@@ -626,10 +636,12 @@ Registers a function to run when state changes.
 - On property write, all subscribed functions are notified.
 - Subscribers are stored in an internal array and called on state changes.
 
+#### [Back to top](#table-of-contents)
+
 ## Glossary:
 
 ### Client-side routing 
-Client side routing lets your app change the URL and display new content instantly, all without reloading the page or asking the server for a new one
+Client side routing lets your app change the URL and display new content instantly, all without reloading the page or asking the server for a new one.
 
 ### Virtual DOM Rendering
 A virtual DOM is a fast, in-memory version of the real DOM. When your app changes, only the differences are updated in the real DOM, making updates quicker and more efficient.
@@ -643,9 +655,9 @@ The framework utilizes virtual nodes (VNodes) to represent DOM elements before r
 
 ### Rendering Process
 
-1. Create VNodes using `createVNode()` function
-2. Mount the root VNode using `mount()` function
-3. The framework converts VNodes to real DOM elements
+1. Create virtual nodes using `createVNode()` function
+2. Mount the root virtual nodes using `mount()` function
+3. The framework converts virtual nodes to real DOM elements
 
 Example:
 ```javascript
@@ -656,6 +668,7 @@ This creates a virtual button element with a class, a click event, and the label
 ```javascript
 <button class="primary">Click Me</button>
 ```
+#### [Back to top](#table-of-contents)
 
 
 ## Contributors
