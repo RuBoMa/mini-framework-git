@@ -6,7 +6,8 @@ import { state, subscribe } from '../framework/state.js'
 function routeToFilter(route) {
     if (route === 'active' || route === './active') return 'active'
     if (route === 'completed' || route === './completed') return 'completed'
-    return 'all'
+    if (route === '' || route === '/' || route === 'all') return 'all'
+    return 'notfound'
 }
 
 function handleRouteChange(route) {
@@ -31,6 +32,9 @@ function update() {
 
 // app renders the main application structure
 function app() {
+    if (state.filter === 'notfound') {
+        return createVNode('h1', { class: 'not-found' }, '404 - Page Not Found')
+    }
     const visibleTasks = state.tasks.filter(task => {
         if (state.filter === 'active') return !task.completed
         if (state.filter === 'completed') return task.completed
