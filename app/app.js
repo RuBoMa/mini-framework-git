@@ -171,9 +171,15 @@ function taskItem(task) {
             },
             onkeydown: e => {
                 if (e.key === 'Enter') {
-                    task.name = e.target.value.trim()
+                    // if empty, remove task
+                    if (e.target.value.trim() === '') {
+                        state.tasks = state.tasks.filter(t => t.id !== task.id)
+                    } else {
+                        task.name = e.target.value.trim()
+                    }
                     state.editingId = null
                 } else if (e.key === 'Escape') {
+                    e.target.value = task.name
                     state.editingId = null
                 }
             }

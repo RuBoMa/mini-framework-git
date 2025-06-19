@@ -1,3 +1,5 @@
+const proxyCache = new WeakMap()
+
 export const state = makeReactive({
     tasks: [],
     filter: 'all',      // 'all', 'active', or 'completed'
@@ -20,7 +22,10 @@ export function subscribe(fn) {
 // Recursive Proxy: intercepts reads and writes
 // Reactivity: when state is modified, calls notify()
 function makeReactive(obj) {
-    return new Proxy(obj, {
+    if (proxyCache.has(obj)) {
+        return proxyCache.get(obj)
+    }
+    const proxy = new Proxy(obj, {
 
         // Handle property reads
         get(target, key) {
@@ -37,4 +42,6 @@ function makeReactive(obj) {
             return true
         }
     })
+    proxyCache.set(obj, proxy)
+    return proxy
 }
