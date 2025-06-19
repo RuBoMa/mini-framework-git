@@ -6,14 +6,13 @@ This documentation provides comprehensive guidance on framework implementation a
 
 
 ## Table of Contents
-1. [Framework Features](#⚡-framework-features) 
+1. [Framework Features](#framework-features) 
     - [Core Capabilities](#core-capabilities)
     - [Use cases](#use-cases)
     - [Architecture](#architecture)
-    - [Key Benefits](#key-benefits)
-2. [Prerequisites](#⚠️-prerequisites)
-3. [Getting Started](#🚀-getting-started)
-4. [Framework Testing](#🧪-framework-testing)
+2. [Prerequisites](#prerequisites)
+3. [Getting Started](#getting-started)
+4. [Framework Testing](#framework-testing)
 5. [Creating Elements](#creating-elements)
     - [Basic Elements](#basic-elements)
     - [Nested Elements](#nested-elements)
@@ -22,14 +21,14 @@ This documentation provides comprehensive guidance on framework implementation a
 6. [Event Handling](#event-handling)
 7. [Routing](#routing)
 8. [State Management](#state-management)
-9. [Framework Reference](#📚-framework-reference)
-    - [mini.js](#🎯-minijs)
-    - [router.js](#🎯-routerjs)
-    - [state.js](#🎯-statejs)
+9. [Framework Reference](#framework-reference)
+    - [mini.js](#minijs)
+    - [router.js](#routerjs)
+    - [state.js](#statejs)
 10. [Glossary](#glossary)
 11. [Contributors](#contributors)
 
-## ⚡ Framework Features
+## Framework Features
 
 ### Core Capabilities
 - **Virtual DOM Rendering** - Efficient DOM manipulation through [virtual nodes](#virtual-nodes)
@@ -49,14 +48,10 @@ Three-layer structure:
 2. **Routing Layer** [(`router.js`)](#routerjs) - Client-side navigation
 3. **State Layer** [(`state.js`)](#statejs) - Application data management
 
-### Key Benefits
-<!-- - Simple API with minimal learning curve  -->
-- Browser-compatible ES modules (Chrome, Firefox, Edge, Safari)
-- Transparent implementation for educational value
-- Flexible structure — no required way to organize your code
+
 #### [Back to top](#mini-framework-documentation)
 
-## ⚠️ Prerequisites
+## Prerequisites
 
 Mini Framework requires the following components:
 
@@ -81,9 +76,9 @@ Mini Framework requires the following components:
   > python3 -m http.server
   > ```
 
-  The browser environment must supports ES module imports. Include the following in `index.html`:
+  The browser environment must support ES module imports. Include the following in `index.html`:
   ```javascript
-  `<script type="module" src="./app/app.js"></script>`
+  `<script type="module" src="app/app.js"></script>`
   ```
 
 **Recommended folder structure:**
@@ -100,7 +95,7 @@ Mini Framework requires the following components:
 ````
 #### [Back to top](#table-of-contents)
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Basic Setup
 
@@ -109,7 +104,7 @@ Initialize applications using Mini Framework with the following steps:
 ### 1. Import the core functions from framework files:
 These import statements should be placed at the top of the main application file (typically app.js in the app folder):
 
-Note: Import paths must be adjusted to correspond with the project's folder structure as specified in the Prerequisites section
+Note: Import paths must be adjusted to correspond with the project's folder structure as specified in the Prerequisites section.
 
 ```javascript
 import { createVNode, mount } from '../framework/mini.js'
@@ -140,7 +135,7 @@ Wrap the mounting process in an update function and subscribe it to state change
 
 ```javascript
 function update() {
-    mount(document.body, app())
+    mount(document.body, App())
 }
 subscribe(()=> update())
 ```
@@ -151,7 +146,7 @@ update()
 This instructs the framework to display VNode returned by `App()` inside the `<body>` of the HTML page and re-render whenever state properties change.
 #### [Back to top](#table-of-contents)
 
-## 🧪 Framework Testing
+## Framework Testing
 
 The following test demonstrates core framework features and can be used to verify functionality:
 
@@ -162,7 +157,7 @@ The following test demonstrates core framework features and can be used to verif
 - ✅ State management with reactive updates
 - ✅ Event handling
 
-Copy the code below into app.js and open it in a browser to verify framework functionality:
+Copy the code below into `app.js` and open it in a browser to verify framework functionality:
 
 
 ```javascript
@@ -532,9 +527,9 @@ update()
 
 #### [Back to top](#table-of-contents)
 
-## 📚 Framework Reference
+## Framework Reference
 
-### 🎯 mini.js
+### mini.js
 
 #### `createVNode(tag, attrs, ...children)`
 Creates a virtual node object that representing a DOM element.
@@ -569,14 +564,14 @@ Mounts rendered virtual nodes to a target DOM element.
 - **root** (Element): Target DOM element
 - **vnode** (VNode|Array): Virtual node to mount
 - **Behavior**:
-    - Clears existing content with innerHTML = ''
+    - Clears existing content with innerHTML = ""
     - Handles both single vnodes and arrays of vnodes
     - Validates vnode structure before rendering
 - **Throws**: Error if root is not a DOM Element or vnode is invalid
 
 #### [Back to top](#table-of-contents)
 
-### 🎯 router.js
+### router.js
 
 #### `initRouter(callback)`
 Initializes the hash-based router system.
@@ -597,8 +592,8 @@ Determines if a route matches the current active route.
 **Returns**: Boolean indicating if the given route matches the current route
 
 **Special Handling**:
-    - Normalizes routes by treating '/' as equivalent to an empty string ''
-    - Returns true if the normalized current route matches the normalized input route or if the current route is empty and the input route is 'all'
+- Normalizes routes by treating '/' as equivalent to an empty string ""
+- Returns true if the normalized current route matches the normalized input route or if the current route is empty and the input route is 'all'
 
 #### `handleRouteChange()` (Internal)
 Internal function that processes route changes and updates the current route state.
@@ -612,7 +607,7 @@ Internal function that processes route changes and updates the current route sta
 
 #### [Back to top](#table-of-contents)
 
-### 🎯 state.js
+### state.js
 
 #### `state` (Object)
 
@@ -622,10 +617,10 @@ Proxy-based reactivity: any changes to properties (including nested objects/arra
 **Initial State Example:**
 ```javascript
 export const state = makeReactive({
-    tasks: [],        //Array to hold task objects
-    filter: 'all',    //String indicating current filter ('all', 'active', or 'completed')
-    editingId: null, //ID of the task currently being edited (null if none)
-    currentId: 1,    //Numeric ID counter for new tasks
+    tasks: [],        // Array to hold task objects
+    filter: 'all',    // String indicating current filter ('all', 'active', or 'completed')
+    editingId: null, // ID of the task currently being edited (null if none)
+    currentId: 1,    // Numeric ID counter for new tasks
 })
 ```
 #### `subscribe(callback)`
@@ -645,7 +640,7 @@ Registers a function to run when state changes.
 ## Glossary:
 
 ### Client-side routing 
-Client side routing lets your app change the URL and display new content instantly, all without reloading the page or asking the server for a new one
+Client side routing lets your app change the URL and display new content instantly, all without reloading the page or asking the server for a new one.
 
 ### Virtual DOM Rendering
 A virtual DOM is a fast, in-memory version of the real DOM. When your app changes, only the differences are updated in the real DOM, making updates quicker and more efficient.
