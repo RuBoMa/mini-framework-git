@@ -110,6 +110,7 @@ function mainSection(visibleTasks) {
                     {
                         class: 'toggle-all-label',
                         for: 'toggle-all',
+                        style: state.tasks.length > 0 ? 'display: block;' : 'display: none;',
                         onclick: () => {
                             const allCompleted = state.tasks.length > 0 && state.tasks.every(t => t.completed)
                             state.tasks.forEach(t => t.completed = !allCompleted)
@@ -194,8 +195,7 @@ function infoFooter() {
     //if (activeCount === 0 && state.tasks.length === 0 && state.currentId === 1) {
     if (state.tasks.length === 0) {  // this should suffice. infoFooter didn't disappear when removing tasks individually
         return ''
-    }
-    
+    }  
     return createVNode('footer', { class: 'footer', style: 'display: block;' },
         createVNode('span', { class: 'todo-count' },
             createVNode('strong', {}, `${activeCount}`),
@@ -241,7 +241,14 @@ function capFirstLetter(str) {
     return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
+state.tasks = [] // Initialize tasks array
+state.filter = 'all' // Set initial filter to 'all'
+state.editingId = null // No task is being edited initially
+state.currentId = 1 // Start task IDs from 1
+
 // Initialize router and start app
 initRouter(handleRouteChange)
 subscribe(() => update())       // subscribe update() to state changes
+
+
 update()

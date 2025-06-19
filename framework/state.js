@@ -1,11 +1,6 @@
 const proxyCache = new WeakMap()
 
-export const state = makeReactive({
-    tasks: [],
-    filter: 'all',      // 'all', 'active', or 'completed'
-    editingId: null,
-    currentId: 1,
-})
+export const state = makeReactive({})
 
 // All functions to be notified when state changes
 let subscribers = []
